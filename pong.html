@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+		<style>
+			body {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: space-evenly;
+
+				height: 100vh;
+
+				background-color: black;
+				margin: 0;
+			}
+			#err-small {
+				color: white;
+			}
+			#btn-dl {
+				background: none;
+				border: 2px solid white;
+				border-radius: 15rem;
+				color: white;
+				padding: .5rem;
+				cursor: pointer;
+				transition: 250ms ease-in-out;
+			}
+			#btn-dl:hover {
+				color: black;
+				background-color: white;
+			}
+			#canvas {
+				border: 10px double white;
+				border-left: none;
+				border-right: none;
+			}
+			@media screen and (min-width: 1290px) {
+				#canvas {
+					border: 10px double white;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+		<span id="err-small">This game cannot be ran on small screens</span>
+		<!-- <a href="/files/pong-x64.exe">
+			<button id="btn-dl">Download</button>
+		</a> -->
+		<script type="text/javascript">
+			const canvas = document.getElementById("canvas");
+			const errSmall = document.getElementById("err-small");
+
+			if (window.innerWidth <= 1280) {
+				canvas.style.display = "none";
+				errSmall.style.display = "block";
+				Module = undefined;
+			} else {
+				canvas.style.display = "block";
+				errSmall.style.display = "none";
+				Module = {
+					canvas: (function () {
+						return document.getElementById("canvas");
+					})(),
+				};
+			}
+		</script>
+		<script src="/pong/snake.js"></script>
+	</body>
+</html>

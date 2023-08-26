@@ -1,0 +1,5 @@
+# Allows all crawlers
+User-Agent: *
+Allow: /
+
+Sitemap: http://localhost:3000/sitemap.xml
