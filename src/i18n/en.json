@@ -1,0 +1,39 @@
+{
+    "globals": {
+        "description" : "Mathieu Déry's portfolio",
+        "cvLink" : "/CV-MathieuDery-en.pdf"
+    },
+    "notFound": {
+        "title" : "Page Not Found"
+    },
+    "index" : {
+        "title" : "Home",
+        "description" : "Home of Mathieu Déry's portfolio",
+        "portraitAlt" : "Picture of me",
+        "hello" : "Hello!",
+        "text" : "I am a {{age}} year old programmer able to do low-level programming, as well as frontend. Whether it be a desktop app, a byte manipulation app or a simple WebAssembly app, I always do my 110% !"
+    },
+    "contact" : {
+        "title" : "Contact me",
+        "description" : "Contact Mathieu Déry",
+        "sendSuccess" : "Message sent!",
+        "sendError" : "Error sending message",
+        "sendTitle" : "Send a message",
+        "name" : "Name",
+        "nameRequired" : "The name cannot be empty",
+        "email" : "Email",
+        "emailRequired" : "The email cannot be empty",
+        "emailFormat" : "The email format is invalid",
+        "msg" : "Message",
+        "msgRequired" : "The message cannot be empty",
+        "msgMin" : "The message is too short",
+        "msgMax" : "The message is too long",
+        "send" : "Send",
+        "contactInfo" : "Contact information"
+    },
+    "projects" : {
+        "title" : "My projects",
+        "description" : "All Mathieu Déry's projects",
+        "projectLink" : "Project's link"
+    }
+}

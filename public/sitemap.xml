@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    
+    <url>
+        <loc>https://unimat45.github.io/</loc>
+        <lastmod>2025-04-08T02:02:00.933Z</lastmod>
+        <changefreq>yearly</changefreq>
+        
+    </url>
+
+    <url>
+        <loc>https://unimat45.github.io/projects</loc>
+        <lastmod>2025-04-08T02:02:00.933Z</lastmod>
+        <changefreq>yearly</changefreq>
+        
+    </url>
+
+    <url>
+        <loc>https://unimat45.github.io/contact</loc>
+        <lastmod>2025-04-08T02:02:00.933Z</lastmod>
+        <changefreq>yearly</changefreq>
+        
+    </url>
+
+    <url>
+        <loc>https://unimat45.github.io/CV-MathieuDery.pdf</loc>
+        <lastmod>2025-04-08T02:02:00.933Z</lastmod>
+        <changefreq>yearly</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://unimat45.github.io/CV-MathieuDery-en.pdf" />
+	<xhtml:link rel="alternate" hreflang="fr" href="https://unimat45.github.io/CV-MathieuDery.pdf" />
+    </url>
+
+    <url>
+        <loc>https://unimat45.github.io/projects/banana_streaming</loc>
+        <lastmod>2025-04-08T02:02:00.933Z</lastmod>
+        <changefreq>yearly</changefreq>
+        
+    </url>
+
+    <url>
+        <loc>https://unimat45.github.io/projects/pport</loc>
+        <lastmod>2025-04-08T02:02:00.933Z</lastmod>
+        <changefreq>yearly</changefreq>
+        
+    </url>
+
+    <url>
+        <loc>https://unimat45.github.io/projects/password_patch</loc>
+        <lastmod>2025-04-08T02:02:00.933Z</lastmod>
+        <changefreq>yearly</changefreq>
+        
+    </url>
+
+    <url>
+        <loc>https://unimat45.github.io/projects/pong</loc>
+        <lastmod>2025-04-08T02:02:00.933Z</lastmod>
+        <changefreq>yearly</changefreq>
+        
+    </url>
+
+    <url>
+        <loc>https://unimat45.github.io/projects/crosshair</loc>
+        <lastmod>2025-04-08T02:02:00.933Z</lastmod>
+        <changefreq>yearly</changefreq>
+        
+    </url>
+
+    <url>
+        <loc>https://unimat45.github.io/projects/rcon</loc>
+        <lastmod>2025-04-08T02:02:00.933Z</lastmod>
+        <changefreq>yearly</changefreq>
+        
+    </url>

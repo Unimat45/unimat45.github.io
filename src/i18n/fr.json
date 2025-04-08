@@ -1,0 +1,39 @@
+{
+    "globals": {
+        "description" : "Portfolio de Mathieu Déry",
+        "cvLink" : "/CV-MathieuDery.pdf"
+    },
+    "notFound": {
+        "title" : "Page Non Trouvée"
+    },
+    "index" : {
+        "title" : "Accueil",
+        "description" : "Accueil du portfolio de Mathieu Déry",
+        "portraitAlt" : "Photo de moi",
+        "hello": "Bonjour!",
+        "text" : "Je suis un programmeur de {{age}} ans capable d'effectuer de la programmation de bas niveau, mais capable de faire du frontend. Que ce soit une application de bureau, de manipulation d’octets ou encore une simple application en WebAssembly, j’y mets mon 110% !"
+    },
+    "contact" : {
+        "title" : "Contacter",
+        "description" : "Contacter Mathieu Déry",
+        "sendSuccess" : "Message envoyé!",
+        "sendError" : "Erreur lors de l'envoi du message",
+        "sendTitle" : "Envoyer un message",
+        "name" : "Nom",
+        "nameRequired" : "Le nom ne peut pas être vide",
+        "email" : "Courriel",
+        "emailRequired" : "Le courriel ne peut pas être vide",
+        "emailFormat" : "Le format du courriel est invalide",
+        "msg" : "Message",
+        "msgRequired" : "Le message ne peut pas être vide",
+        "msgMin" : "Le message est trop court",
+        "msgMax" : "Le message est trop long",
+        "send" : "Envoyer",
+        "contactInfo" : "Informations de contact"
+    },
+    "projects" : {
+        "title" : "Mes projets",
+        "description" : "Tous les projets de Mathieu Déry",
+        "projectLink" : "Lien vers le projet"
+    }
+}
