@@ -1,5 +1,0 @@
-# Allows all crawlers
-User-Agent: *
-Allow: /
-
-Sitemap: https://unimat45.github.io/sitemap.xml
