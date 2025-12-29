@@ -1,0 +1,52 @@
+---
+interface Props {
+    className?: string;
+}
+
+import "../styles/global.css";
+
+import Button from "../components/Button.astro";
+import { cn } from "../lib/utils";
+
+const { className } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <title>Astro Basics</title>
+    </head>
+    <body
+        class="min-h-screen grid grid-rows-[auto_1fr_auto] text-gray-300 bg-linear-to-br from-gray-900 via-black to-gray-900"
+    >
+        <header class="bg-black/90 backdrop-blur-md border-b border-cyan-500/20 p-4">
+            <nav class="max-w-7xl mx-auto">
+                <ul class="flex gap-2">
+                    <li>
+                        <a href="/">
+                            <Button highlighted> Home </Button>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/projects">
+                            <Button> Projects </Button>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/contact">
+                            <Button> Contact </Button>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <main class={cn("p-4 max-w-7xl mx-auto", className)}>
+            <slot />
+        </main>
+    </body>
+</html>

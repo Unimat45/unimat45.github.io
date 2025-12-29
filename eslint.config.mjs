@@ -1,76 +1,69 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
+// @ts-check
+import eslint from "@eslint/js";
+import eslintPluginAstro from "eslint-plugin-astro";
+import prettier from "eslint-plugin-prettier/recommended";
+import react from "eslint-plugin-react";
+import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
-import { FlatCompat } from "@eslint/eslintrc";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-});
-
-export default tseslint.config(
+export default defineConfig(
     {
-        ignores: [".next", "src/components/ui", "public"],
-    },
-    ...compat.extends("next/core-web-vitals"),
-    {
-        files: ["**/*.ts", "**/*.tsx"],
-        extends: [
-            ...tseslint.configs.recommended,
-            ...tseslint.configs.recommendedTypeChecked,
-            ...tseslint.configs.stylisticTypeChecked,
+        ignores: [
+            "dist/*",
+            // Temporary compiled files
+            "**/*.ts.build-*.mjs",
+
+            // JS files at the root of the project
+            "*.js",
+            "*.cjs",
+            "*.mjs",
+
+            // Shadcn components
+            "./lib/components/ui/*.tsx",
         ],
-        "rules": {
+    },
+    eslint.configs.recommended,
+    ...tseslint.configs.recommended,
+    ...eslintPluginAstro.configs.recommended,
+    {
+        languageOptions: {
+            parserOptions: {
+                warnOnUnsupportedTypeScriptVersion: false,
+                sourceType: "module",
+                ecmaVersion: "latest",
+            },
+        },
+    },
+    {
+        rules: {
             "arrow-spacing": [
                 "warn",
                 {
-                    "before": true,
-                    "after": true
-                }
+                    before: true,
+                    after: true,
+                },
             ],
-            "brace-style": [
-                "error",
-                "stroustrup",
-                {
-                    "allowSingleLine": true
-                }
-            ],
-            "comma-dangle": [
-                "error",
-                "always-multiline"
-            ],
+            "comma-dangle": ["error", "always-multiline"],
             "comma-spacing": "error",
             "comma-style": "error",
-            "curly": [
-                "error",
-                "multi-line",
-                "consistent"
-            ],
-            "dot-location": [
-                "error",
-                "property"
-            ],
+            curly: ["error", "multi-line", "consistent"],
+            "dot-location": ["error", "property"],
             "handle-callback-err": "off",
-            "indent": [
-                "error",
-                4
-            ],
+            indent: ["error", 4],
             "keyword-spacing": "error",
             "max-nested-callbacks": [
                 "error",
                 {
-                    "max": 4
-                }
+                    max: 4,
+                },
             ],
             "max-statements-per-line": [
                 "error",
                 {
-                    "max": 2
-                }
+                    max: 2,
+                },
             ],
-            "no-console": "off",
+            "no-console": "error",
             "no-empty-function": "error",
             "no-floating-decimal": "error",
             "no-inline-comments": "error",
@@ -79,62 +72,59 @@ export default tseslint.config(
             "no-multiple-empty-lines": [
                 "error",
                 {
-                    "max": 2,
-                    "maxEOF": 1,
-                    "maxBOF": 0
-                }
+                    max: 2,
+                    maxEOF: 1,
+                    maxBOF: 0,
+                },
             ],
             "no-shadow": [
                 "error",
                 {
-                    "allow": [
-                        "err",
-                        "resolve",
-                        "reject"
-                    ]
-                }
+                    allow: ["err", "resolve", "reject"],
+                },
             ],
-            "no-trailing-spaces": [
-                "error"
-            ],
+            "no-trailing-spaces": ["error"],
             "no-var": "error",
-            "object-curly-spacing": [
-                "error",
-                "always"
-            ],
+            "object-curly-spacing": ["error", "always"],
             "prefer-const": "error",
-            "quotes": [
-                "error",
-                "double"
-            ],
-            "semi": [
-                "error",
-                "always"
-            ],
+            quotes: ["error", "double"],
+            semi: ["error", "always"],
             "space-before-blocks": "error",
             "space-before-function-paren": [
                 "error",
                 {
-                    "anonymous": "never",
-                    "named": "never",
-                    "asyncArrow": "always"
-                }
+                    anonymous: "never",
+                    named: "never",
+                    asyncArrow: "always",
+                },
             ],
             "space-in-parens": "error",
             "space-infix-ops": "error",
             "space-unary-ops": "error",
             "spaced-comment": "error",
-            "yoda": "error"
-        }
+            yoda: "error",
+            "@typescript-eslint/no-misused-promises": "off",
+            "@typescript-eslint/no-unused-vars": "warn",
+            "@typescript-eslint/no-namespace": "off",
+        },
+    },
+    react.configs.flat["jsx-runtime"],
+    prettier,
+    {
+        rules: {
+            "brace-style": [
+                "error",
+                "stroustrup",
+                {
+                    allowSingleLine: true,
+                },
+            ],
+        },
     },
     {
-        linterOptions: {
-            reportUnusedDisableDirectives: true,
-        },
-        languageOptions: {
-            parserOptions: {
-                projectService: true,
-            },
+        files: ["./lib/**/*.ts", "./lib/**/*.tsx", "./pages/**/*.tsx", "./build.ts", "./migrations/*.ts"],
+        rules: {
+            "no-console": "off",
         },
     },
 );
