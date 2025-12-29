@@ -46,8 +46,8 @@ const fr = defineLocale({
             satisfaction: "Satisfaction Clientèle",
         },
         projects: {
-            title: "Projets",
-            description: "",
+            title: "Mes Projets",
+            description: "Vitrine de mes derniers travaux et réalisations créatives",
             image: "",
         },
         contact: {
@@ -84,8 +84,8 @@ const en = defineLocale({
             satisfaction: "Client Satisfaction",
         },
         projects: {
-            title: "Projects",
-            description: "",
+            title: "My Projects",
+            description: "A showcase of my latest work and creative endeavors",
             image: "",
         },
         contact: {

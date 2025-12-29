@@ -12,6 +12,7 @@ import Face from "../../assets/face.png";
 import { Github, Mail } from "lucide-react";
 import Button from "../../components/Button.astro";
 import HomeCard from "../../components/HomeCard.astro";
+import FancyLastWord from "../../components/FancyLastWord.astro";
 
 import { initI18n } from "../../lib/i18n";
 
@@ -31,11 +32,10 @@ const t = await initI18n(Astro.params);
             </div>
             <span class="text-2xl font-bold">{t(($) => $.index.jobTitle)}</span>
             <p class="mt-4 sm:max-w-2/3">
-                {t(($) => $.index.description).removeLastWord()}<span
-                    class="bg-linear-to-r from-cyan-400 to-emerald-400 bg-clip-text font-semibold text-transparent"
-                >
+                {t(($) => $.index.description).removeLastWord()}
+                <FancyLastWord>
                     {t(($) => $.index.description).getLastWord()}
-                </span>
+                </FancyLastWord>
             </p>
             <div class="flex gap-2">
                 <a target="_blank" href="https://github.com/unimat45" title={t(($) => $.index.github)}>
