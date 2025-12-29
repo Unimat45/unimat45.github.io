@@ -1,14 +1,27 @@
 ---
-interface Props {
-    className?: string;
-}
+import { initI18n, type Pages } from "../lib/i18n/index";
 
 import "../styles/global.css";
+import "../lib/strings";
 
+import { Seo } from "astro-seo-meta";
 import Button from "../components/Button.astro";
 import { cn } from "../lib/utils";
 
-const { className } = Astro.props;
+interface Props {
+    className?: string;
+    page: Pages;
+}
+
+const { pathname } = Astro.url;
+const { locale = "fr" } = Astro.params;
+const { className, page } = Astro.props;
+
+const t = await initI18n(Astro.params);
+const localizedPath = (currentLocale: string) => {
+    const newLocale = currentLocale === "fr" ? "en" : "fr";
+    return pathname.replace(currentLocale, newLocale);
+};
 ---
 
 <!doctype html>
@@ -16,29 +29,48 @@ const { className } = Astro.props;
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         <meta name="generator" content={Astro.generator} />
-        <title>Astro Basics</title>
+
+        <Seo
+            title={t(($) => $.global.title, { title: t(($) => $[page].title) })}
+            description={t(($) => $[page].description)}
+            facebook={{
+                image: t(($) => $.global.image),
+                url: "https://unimat45.github.io/",
+                type: "website",
+            }}
+            twitter={{
+                image: t(($) => $.global.image),
+                site: "https://unimat45.github.io/",
+                card: "summary",
+            }}
+        />
     </head>
     <body
-        class="min-h-screen grid grid-rows-[auto_1fr_auto] text-gray-300 bg-linear-to-br from-gray-900 via-black to-gray-900"
+        class="grid min-h-screen grid-rows-[auto_1fr_auto] bg-linear-to-br from-gray-900 via-black to-gray-900 text-gray-300"
     >
-        <header class="bg-black/90 backdrop-blur-md border-b border-cyan-500/20 p-4">
-            <nav class="max-w-7xl mx-auto">
+        <header class="border-b border-cyan-500/20 bg-black/90 p-4 backdrop-blur-md">
+            <nav class="mx-auto max-w-7xl">
                 <ul class="flex gap-2">
                     <li>
-                        <a href="/">
-                            <Button highlighted> Home </Button>
+                        <a href={`/${locale}/`}>
+                            <Button highlighted={page === "index"}> {t(($) => $.index.title)} </Button>
                         </a>
                     </li>
                     <li>
-                        <a href="/projects">
-                            <Button> Projects </Button>
+                        <a href={`/${locale}/projects`}>
+                            <Button highlighted={page === "projects"}> {t(($) => $.projects.title)} </Button>
                         </a>
                     </li>
                     <li>
-                        <a href="/contact">
-                            <Button> Contact </Button>
+                        <a href={`/${locale}/contact`}>
+                            <Button highlighted={page === "contact"}> {t(($) => $.contact.title)} </Button>
+                        </a>
+                    </li>
+                    <li class="ml-auto">
+                        <a href={localizedPath(locale)}>
+                            <Button>{locale === "fr" ? "English" : "Français"}</Button>
                         </a>
                     </li>
                 </ul>

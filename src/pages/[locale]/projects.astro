@@ -1,0 +1,13 @@
+---
+import type { GetStaticPaths } from "astro";
+
+export const getStaticPaths = (() => {
+    return [{ params: { locale: "fr" } }, { params: { locale: "en" } }];
+}) satisfies GetStaticPaths;
+
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout page="projects">
+    <h1>Hello</h1>
+</Layout>

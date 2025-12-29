@@ -1,0 +1,83 @@
+---
+import type { GetStaticPaths } from "astro";
+
+export const getStaticPaths = (() => {
+    return [{ params: { locale: "fr" } }, { params: { locale: "en" } }];
+}) satisfies GetStaticPaths;
+
+import { Image } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+import Face from "../../assets/face.png";
+
+import { Github, Mail } from "lucide-react";
+import Button from "../../components/Button.astro";
+import HomeCard from "../../components/HomeCard.astro";
+
+import { initI18n } from "../../lib/i18n";
+
+const t = await initI18n(Astro.params);
+---
+
+<Layout page="index" className="my-8 flex flex-col justify-between gap-8">
+    <div class="flex flex-col-reverse items-center justify-between gap-4 sm:flex-row">
+        <section class="animate-fade-in flex flex-col gap-4">
+            <span
+                class="bg-linear-to-r from-cyan-400 to-emerald-400 bg-clip-text text-xl font-semibold text-transparent"
+                >{t(($) => $.index.hello)}</span
+            >
+            <div>
+                <h1 class="text-8xl font-bold">Mathieu</h1>
+                <div class="ml-1 h-1 w-1/4 rounded-full bg-linear-to-r from-cyan-400 to-emerald-400"></div>
+            </div>
+            <span class="text-2xl font-bold">{t(($) => $.index.jobTitle)}</span>
+            <p class="mt-4 sm:max-w-2/3">
+                {t(($) => $.index.description).removeLastWord()}<span
+                    class="bg-linear-to-r from-cyan-400 to-emerald-400 bg-clip-text font-semibold text-transparent"
+                >
+                    {t(($) => $.index.description).getLastWord()}
+                </span>
+            </p>
+            <div class="flex gap-2">
+                <a target="_blank" href="https://github.com/unimat45" title={t(($) => $.index.github)}>
+                    <Button className="w-fit">
+                        <Github />
+                    </Button>
+                </a>
+                <a href="/contact" title={t(($) => $.index.email)}>
+                    <Button className="w-fit">
+                        <Mail />
+                    </Button>
+                </a>
+            </div>
+        </section>
+        <section>
+            <div class="animate-fade-in-delay order-1 flex justify-center md:order-2">
+                <div class="relative">
+                    <div
+                        class="absolute inset-0 animate-pulse rounded-2xl bg-linear-to-r from-cyan-500 to-emerald-500 opacity-30 blur-2xl"
+                    >
+                    </div>
+                    <div
+                        class="relative h-80 w-80 overflow-hidden rounded-2xl border-2 border-cyan-500/30 shadow-2xl shadow-cyan-500/20 md:h-96 md:w-96"
+                    >
+                        <Image src={Face} alt={t(($) => $.index.imageAlt)} class="h-full w-full object-cover" />
+                    </div>
+                    <div
+                        class="animate-float absolute -right-4 -bottom-4 h-24 w-24 rounded-lg bg-linear-to-br from-cyan-500 to-emerald-500 opacity-20"
+                    >
+                    </div>
+                    <div
+                        class="animate-float-delay absolute -top-4 -left-4 h-32 w-32 rounded-full bg-linear-to-br from-emerald-500 to-cyan-500 opacity-10"
+                    >
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <section class="grid gap-8 sm:grid-cols-4">
+        <HomeCard stat="50+" label={t(($) => $.index.projects)} />
+        <HomeCard stat="15+" label={t(($) => $.index.clients)} />
+        <HomeCard stat="3+" label={t(($) => $.index.exp)} />
+        <HomeCard stat="100%" label={t(($) => $.index.satisfaction)} />
+    </section>
+</Layout>
