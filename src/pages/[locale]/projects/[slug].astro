@@ -1,0 +1,122 @@
+---
+import type { GetStaticPaths } from "astro";
+import { projects } from "../../../assets/projects";
+import Layout from "../../../layouts/Layout.astro";
+import { ArrowLeft, ExternalLink, Github } from "lucide-react";
+import { initI18n } from "../../../lib/i18n";
+import { ProjectCarousel } from "../../../components/ProjectCarousel";
+
+export const getStaticPaths = (() => {
+    return [
+        ...projects.map((p) => ({
+            params: { locale: "fr", slug: p.slug },
+        })),
+        ...projects.map((p) => ({
+            params: { locale: "en", slug: p.slug },
+        })),
+    ];
+}) satisfies GetStaticPaths;
+
+const { slug, locale } = Astro.params;
+const { t } = initI18n({ locale });
+
+const project = projects.find((p) => p.slug === slug);
+
+if (!project) {
+    throw new Error(`Slug not found: ${slug}`);
+}
+---
+
+<Layout
+    page="projects"
+    title={project.title}
+    description={locale === "fr" ? project.description_fr : project.description_en}
+    image={`/images/projets/${slug}/logo.webp`}
+>
+    <a href={`/${locale}/projects`} class="block w-fit">
+        <button
+            class="group mb-8 flex cursor-pointer items-center space-x-2 text-cyan-400 transition-colors hover:text-cyan-300"
+        >
+            <ArrowLeft className="transition-transform group-hover:-translate-x-1" size={20} />
+            <span>{t(($) => $.projects.back)}</span>
+        </button>
+    </a>
+
+    <div class="relative h-96 overflow-hidden rounded-2xl border border-gray-700/50 shadow-2xl shadow-cyan-500/20">
+        <ProjectCarousel slug={slug} nbr_images={project.nbr_images} client:load />
+        <div class="absolute inset-0 bg-linear-to-t from-gray-900 to-transparent opacity-60"></div>
+    </div>
+
+    <div>
+        <h1 class="mt-8 mb-4 text-5xl font-bold text-white md:text-6xl">
+            {project.title}
+        </h1>
+        <div class="ml-1 h-1 w-24 rounded-full bg-linear-to-r from-cyan-400 to-emerald-400"></div>
+    </div>
+
+    <div class="mt-8 rounded-xl border border-cyan-500/20 bg-linear-to-br from-cyan-500/5 to-emerald-500/5 p-8">
+        <h3 class="mb-4 text-2xl font-bold text-white">{t(($) => $.projects.overview)}</h3>
+        <p class="text-lg leading-relaxed text-gray-300">
+            {locale === "fr" ? project.description_fr : project.description_en}
+        </p>
+    </div>
+
+    <div class="grid gap-8 pt-8 md:grid-cols-2">
+        <div class="rounded-xl border border-gray-700/50 bg-gray-800/30 p-8 transition-all hover:border-cyan-500/50">
+            <h3 class="mb-4 text-lg font-semibold text-white">{t(($) => $.projects.tech)}</h3>
+            <div class="flex flex-wrap gap-2">
+                {
+                    project.tags.map((tag) => (
+                        <span class="cursor-default rounded-full border border-cyan-500/20 bg-cyan-500/10 px-4 py-2 text-sm font-medium text-cyan-400 transition-colors hover:bg-cyan-500/20">
+                            {tag}
+                        </span>
+                    ))
+                }
+            </div>
+        </div>
+
+        <div class="rounded-xl border border-gray-700/50 bg-gray-800/30 p-8 transition-all hover:border-cyan-500/50">
+            <h3 class="mb-4 text-lg font-semibold text-white">
+                {t(($) => $.projects.link, { count: project.has_code && project.has_demo ? 2 : 1 })}
+            </h3>
+            <div class="grid gap-3 sm:grid-cols-2">
+                {
+                    project.has_demo && (
+                        <a
+                            href={project.link_demo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="group flex items-center space-x-3 rounded-lg border border-cyan-500/30 bg-linear-to-r from-cyan-500/10 to-emerald-500/10 p-3 transition-all hover:border-cyan-500 hover:from-cyan-500/20 hover:to-emerald-500/20"
+                        >
+                            <ExternalLink
+                                size={20}
+                                className="text-cyan-400 transition-transform group-hover:translate-x-1"
+                            />
+                            <span class="text-gray-300 transition-colors group-hover:text-white">
+                                {t(($) => $.projects.link_demo)}
+                            </span>
+                        </a>
+                    )
+                }
+                {
+                    project.has_code && (
+                        <a
+                            href={project.link_code}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="group flex items-center space-x-3 rounded-lg border border-cyan-500/30 bg-linear-to-r from-cyan-500/10 to-emerald-500/10 p-3 transition-all hover:border-cyan-500 hover:from-cyan-500/20 hover:to-emerald-500/20"
+                        >
+                            <Github
+                                size={20}
+                                className="text-cyan-400 transition-transform group-hover:translate-x-1"
+                            />
+                            <span class="text-gray-300 transition-colors group-hover:text-white">
+                                {t(($) => $.projects.link_code)}
+                            </span>
+                        </a>
+                    )
+                }
+            </div>
+        </div>
+    </div>
+</Layout>

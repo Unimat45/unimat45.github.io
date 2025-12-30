@@ -1,6 +1,6 @@
 import i18next from "i18next";
 import { Send } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
@@ -10,6 +10,7 @@ type FormPayload = { name: string; email: string; message: string };
 type ContactFormProps = { locale: string };
 
 const ContactForm: React.FC<ContactFormProps> = ({ locale }) => {
+    const [state, setState] = useState<"sent" | "error" | null>(null);
     const { t } = useTranslation();
 
     useMemo(() => {
@@ -27,11 +28,14 @@ const ContactForm: React.FC<ContactFormProps> = ({ locale }) => {
         formState: { errors },
     } = useForm<FormPayload>();
 
-    const onSubmit = (data: FormPayload) => {
-        // TODO: Real data sending
+    const onSubmit = async (data: FormPayload) => {
+        const res = await fetch("https://pfk.ddns.net/api/sendmail", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(data),
+        }).catch(() => ({ ok: false }));
 
-        // eslint-disable-next-line no-console
-        console.log(data);
+        setState(res.ok ? "sent" : "error");
     };
 
     return (
@@ -105,6 +109,11 @@ const ContactForm: React.FC<ContactFormProps> = ({ locale }) => {
                         <Send size={20} />
                         <span>{t(($) => $.contact.send)}</span>
                     </button>
+                    {state && (
+                        <span className="text-sm">
+                            {state === "sent" ? t(($) => $.contact.sendSuccess) : t(($) => $.contact.sendErr)}
+                        </span>
+                    )}
                 </form>
             </div>
         </>

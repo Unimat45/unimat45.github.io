@@ -1,4 +1,4 @@
-import Face from "../../assets/face.png";
+import Face from "../../assets/face.webp";
 
 type i18n = {
     translation: {
@@ -49,6 +49,17 @@ const fr = defineLocale({
             title: "Mes Projets",
             description: "Vitrine de mes derniers travaux et réalisations créatives",
             image: "",
+
+            back: "Retour aux projets",
+
+            overview: "Description",
+            tech: "Technologies",
+
+            link_one: "Lien du projets",
+            link_other: "Liens du projets",
+
+            link_demo: "Voir la démo",
+            link_code: "Voir le code source",
         },
         contact: {
             title: "Contacter",
@@ -107,6 +118,17 @@ const en = defineLocale({
             title: "My Projects",
             description: "A showcase of my latest work and creative endeavors",
             image: "",
+
+            back: "Back to Projects",
+
+            overview: "Overview",
+            tech: "Technologies",
+
+            link_one: "Project link",
+            link_other: "Project links",
+
+            link_demo: "View Live Demo",
+            link_code: "View Source Code",
         },
         contact: {
             title: "Contact",
