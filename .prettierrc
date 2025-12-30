@@ -13,7 +13,6 @@
         "@trivago/prettier-plugin-sort-imports",
         "prettier-plugin-brace-style",
         "prettier-plugin-astro",
-        "prettier-plugin-tailwindcss",
         "prettier-plugin-merge"
     ],
     "braceStyle": "stroustrup",

@@ -148,6 +148,5 @@ cdk.out
 styled-system
 styled-system-studio
 
-# Shadcn
-lib/components/ui/
-server/dbClient/
+# Public files
+public/

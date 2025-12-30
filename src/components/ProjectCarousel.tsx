@@ -12,12 +12,12 @@ const ProjectCarousel: React.FC<ProjectCarouselProps> = ({ slug, nbr_images }) =
     const picturePrefix = isMobile ? "mobile" : "desktop";
 
     return (
-        <div ref={emblaRef} className="overflow-hidden">
-            <div className="flex">
+        <div ref={emblaRef} className="h-full w-full overflow-hidden">
+            <div className="flex h-full w-full">
                 {Array.from({ length: nbr_images }).map((_, i) => (
                     <div key={`${slug}_${i}`} className="min-w-0 flex-[0_0_100%]">
                         <img
-                            className="h-full w-full"
+                            className="h-full w-full object-scale-down"
                             src={`/images/projets/${slug}/${picturePrefix}_${i}.webp`}
                             alt={slug}
                         />

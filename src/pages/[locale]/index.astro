@@ -85,6 +85,7 @@ const { t } = initI18n(Astro.params);
 
 <script>
     document.addEventListener("astro:page-load", () => {
+        // eslint-disable-next-line prettier/prettier
         const age = document.getElementById("age");
 
         function calculateAge(dt: Date) {

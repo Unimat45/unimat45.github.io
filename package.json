@@ -5,9 +5,12 @@
     "scripts": {
         "dev": "bunx --bun astro dev",
         "build": "bunx --bun astro build",
-        "prebuild": "bun run sitemap.ts",
+        "prebuild": "bun run lint && bun run prettier:check && bun run sitemap.ts",
         "preview": "bunx --bun astro preview",
-        "astro": "astro"
+        "astro": "astro",
+        "lint": "bunx --bun eslint . --cache",
+        "prettier:fix": "bunx --bun prettier --write \"**/*.{ts,tsx,js,jsx,mdx,astro}\" --cache",
+        "prettier:check": "bunx --bun prettier --check \"**/*.{ts,tsx,js,jsx,mdx,astro}\" --cache"
     },
     "dependencies": {
         "@astrojs/react": "^4.4.2",
@@ -43,7 +46,6 @@
         "prettier-plugin-astro": "^0.14.1",
         "prettier-plugin-brace-style": "^0.8.2",
         "prettier-plugin-merge": "^0.8.0",
-        "prettier-plugin-tailwindcss": "^0.7.2",
         "typescript-eslint": "^8.50.1"
     }
 }

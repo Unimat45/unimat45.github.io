@@ -10,16 +10,12 @@ export default defineConfig(
     {
         ignores: [
             "dist/*",
+            "node_modules/*",
+            ".astro/*",
+            "public/*",
+
             // Temporary compiled files
             "**/*.ts.build-*.mjs",
-
-            // JS files at the root of the project
-            "*.js",
-            "*.cjs",
-            "*.mjs",
-
-            // Shadcn components
-            "./lib/components/ui/*.tsx",
         ],
     },
     eslint.configs.recommended,
@@ -119,12 +115,6 @@ export default defineConfig(
                     allowSingleLine: true,
                 },
             ],
-        },
-    },
-    {
-        files: ["./lib/**/*.ts", "./lib/**/*.tsx", "./pages/**/*.tsx", "./build.ts", "./migrations/*.ts"],
-        rules: {
-            "no-console": "off",
         },
     },
 );

@@ -22,3 +22,9 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# ESLint cache
+.eslintcache
+
+# Sitemap (auto generated)
+public/sitemap.xml
