@@ -5,18 +5,18 @@ export const getStaticPaths = (() => {
     return [{ params: { locale: "fr" } }, { params: { locale: "en" } }];
 }) satisfies GetStaticPaths;
 
-import { initI18n } from "../../lib/i18n";
+import { initI18n } from "../../../lib/i18n";
 
-import FancyLastWord from "../../components/FancyLastWord.astro";
-import Layout from "../../layouts/Layout.astro";
-import { Projects as IntProjects } from "../../components/Projects";
+import FancyLastWord from "../../../components/FancyLastWord.astro";
+import Layout from "../../../layouts/Layout.astro";
+import { Projects as IntProjects } from "../../../components/Projects";
 
-const t = await initI18n(Astro.params);
+const { t } = initI18n(Astro.params);
 
 const { locale } = Astro.params;
 ---
 
-<Layout page="projects" className="my-8 flex flex-col items-center gap-8">
+<Layout page="projects" className="flex flex-col items-center gap-8">
     <section class="space-y-4 text-center">
         <h1 class="text-6xl font-bold">
             {t(($) => $.projects.title).removeLastWord()}

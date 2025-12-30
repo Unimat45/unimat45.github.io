@@ -52,8 +52,28 @@ const fr = defineLocale({
         },
         contact: {
             title: "Contacter",
-            description: "",
+            description: "Vous avez un projet en tête? Contactez moi!",
             image: "",
+
+            pageTitle: "Restons en Contact",
+
+            info: "Information de Contact",
+            email: "Courriel",
+            phone: "Téléphone",
+            subtitle: "Écris-moi",
+            footer: "Je suis toujours prêt à discuter de nouveaux projets, d'idées créatives ou d'opportunité de faire partie de votre vision. N'hésitez pas à me contacter directement, où à l'aide du formulaire.",
+
+            sendMsg: "Envoyer un message",
+            yourName: "Votre nom",
+            yourEmail: "Votre courriel",
+            yourMessage: "Votre message",
+            yourMessagePlaceholder: "Parlez-moi de votre projet...",
+            send: "Envoyer",
+            sendSuccess: "Votre message à bien été envoyé. Je vous répondrait d'ici quelques jours",
+            sendErr: "Il y a eu une erreur lors de l'envoi de votre message. Veuillez réessayer plus tard",
+
+            requiredErr: "{{field}} est requis",
+            formatErr: "{{field}} n'est pas du bon format",
         },
     },
 });
@@ -90,8 +110,28 @@ const en = defineLocale({
         },
         contact: {
             title: "Contact",
-            description: "",
+            description: "Have a project in mind? Let's talk about it",
             image: "",
+
+            pageTitle: "Stay in Touch",
+
+            info: "Contact Information",
+            email: "Email",
+            phone: "Phone",
+            subtitle: "Let's Connect",
+            footer: "I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision. Feel free to reach out through the form or contact me directly.",
+
+            sendMsg: "Send a Message",
+            yourName: "Your Name",
+            yourEmail: "Your Email",
+            yourMessage: "Your Message",
+            yourMessagePlaceholder: "Tell me about your project...",
+            send: "Send",
+            sendSuccess: "Your message has been sent. I will answer you in the upcoming days",
+            sendErr: "An error has occurred while sending your message. Please, try again later",
+
+            requiredErr: "{{field}} is required",
+            formatErr: "{{field}} is invalid",
         },
     },
 });

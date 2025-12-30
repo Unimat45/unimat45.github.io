@@ -6,8 +6,72 @@ export const getStaticPaths = (() => {
 }) satisfies GetStaticPaths;
 
 import Layout from "../../layouts/Layout.astro";
+import FancyLastWord from "../../components/FancyLastWord.astro";
+import { initI18n } from "../../lib/i18n";
+import { Mail, Phone } from "lucide-react";
+import { ContactForm } from "../../components/ContactForm";
+
+const i18n = initI18n(Astro.params);
+const { t } = i18n;
 ---
 
-<Layout page="contact">
-    <h1>Hello</h1>
+<Layout page="contact" className="flex flex-col gap-8">
+    <section class="space-y-4 text-center">
+        <h1 class="text-6xl font-bold">
+            {t(($) => $.contact.pageTitle).removeLastWord()}
+            <FancyLastWord>
+                {t(($) => $.contact.pageTitle).getLastWord()}
+            </FancyLastWord>
+        </h1>
+
+        <h2 class="text-xl text-gray-400">{t(($) => $.contact.description)}</h2>
+        <div class="mx-auto h-1 w-1/12 rounded-full bg-linear-to-r from-cyan-400 to-emerald-400"></div>
+    </section>
+
+    <section class="grid gap-8 sm:grid-cols-2">
+        <div class="space-y-8">
+            <div
+                class="rounded-xl border border-gray-700/50 bg-gray-800/30 px-2 py-8 transition-all duration-300 hover:border-cyan-500/50"
+            >
+                <h2 class="mb-6 px-8 text-2xl font-bold text-white">{t(($) => $.contact.info)}</h2>
+
+                <div class="space-y-6">
+                    <a
+                        href="mailto:mathieu.dery@bananastreaming.ca"
+                        class="flex items-start space-x-4 rounded px-8 py-4 transition-colors hover:bg-gray-300/30"
+                    >
+                        <div class="rounded-lg border border-cyan-500/20 bg-cyan-500/10 p-3">
+                            <Mail className="text-cyan-400" size={24} />
+                        </div>
+                        <div>
+                            <h3 class="mb-1 font-semibold text-white">{t(($) => $.contact.email)}</h3>
+                            <span class="text-gray-400"> mathieu.dery@bananastreaming.ca </span>
+                        </div>
+                    </a>
+
+                    <a
+                        href="tel:+18195003463"
+                        class="flex items-start space-x-4 rounded px-8 py-4 transition-colors hover:bg-gray-300/30"
+                    >
+                        <div class="rounded-lg border border-cyan-500/20 bg-cyan-500/10 p-3">
+                            <Phone className="text-cyan-400" size={24} />
+                        </div>
+                        <div>
+                            <h3 class="mb-1 font-semibold text-white">{t(($) => $.contact.phone)}</h3>
+                            <span class="text-gray-400"> +1 (819) 500-3463 </span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="mt-8 border-t border-gray-700/50 p-8 pb-0">
+                    <h3 class="mb-4 font-semibold text-white">{t(($) => $.contact.subtitle)}</h3>
+                    <p class="leading-relaxed text-gray-400">
+                        {t(($) => $.contact.footer)}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <ContactForm locale={Astro.params.locale} client:load />
+    </section>
 </Layout>
