@@ -46,7 +46,7 @@
 	</head>
 	<body>
 		<canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-		<span id="err-small">This game cannot be ran on small screens</span>
+		<span id="err-small">This game cannot be run on a small screens</span>
 		<!-- <a href="/files/pong-x64.exe">
 			<button id="btn-dl">Download</button>
 		</a> -->
@@ -54,7 +54,7 @@
 			const canvas = document.getElementById("canvas");
 			const errSmall = document.getElementById("err-small");
 
-			if (window.innerWidth <= 1280) {
+			if (window.innerWidth <= 768) {
 				canvas.style.display = "none";
 				errSmall.style.display = "block";
 				Module = undefined;
