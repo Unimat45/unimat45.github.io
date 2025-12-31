@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+    --breakpoint-xs: 30rem;
+}
+
 @layer base {
     * {
         scroll-behavior: smooth;
@@ -8,6 +12,9 @@
     body {
         @apply antialiased;
     }
+}
+.drop-down {
+    @apply top-17.5;
 }
 
 @layer utilities {
