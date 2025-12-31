@@ -5,7 +5,7 @@ await build({
     minify: true,
     bytecode: true,
     sourcemap: "linked",
-    env: "inline",
+    env: "NODE_EN*",
     compile: {
         outfile: "./dist/portfolio-api",
     },

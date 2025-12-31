@@ -7,6 +7,7 @@ import "../lib/strings";
 import { Seo } from "astro-seo-meta";
 import Button from "../components/Button.astro";
 import { cn } from "../lib/utils";
+import { Menu } from "lucide-react";
 
 interface Props {
     className?: string;
@@ -53,20 +54,23 @@ const localizedPath = (currentLocale: string) => {
     <body
         class="grid min-h-screen grid-rows-[auto_1fr_auto] bg-linear-to-br from-gray-900 via-black to-gray-900 text-gray-300"
     >
-        <header class="border-b border-cyan-500/20 bg-black/90 p-4 backdrop-blur-md">
+        <header class="border-b border-cyan-500/20 bg-black/90 p-4 backdrop-blur-md z-20">
             <nav class="mx-auto max-w-7xl">
                 <ul class="flex gap-2">
-                    <li>
+                    <li id="drop-down-btn" class="flex justify-center items-center sm:hidden">
+                        <Menu />
+                    </li>
+                    <li class="hidden sm:block">
                         <a href={`/${locale}/`}>
                             <Button highlighted={page === "index"}> {t(($) => $.index.title)} </Button>
                         </a>
                     </li>
-                    <li>
+                    <li class="hidden sm:block">
                         <a href={`/${locale}/projects`}>
                             <Button highlighted={page === "projects"}> {t(($) => $.projects.title)} </Button>
                         </a>
                     </li>
-                    <li>
+                    <li class="hidden sm:block">
                         <a href={`/${locale}/contact`}>
                             <Button highlighted={page === "contact"}> {t(($) => $.contact.title)} </Button>
                         </a>
@@ -80,8 +84,49 @@ const localizedPath = (currentLocale: string) => {
             </nav>
         </header>
 
+        <div
+            id="drop-down"
+            class="absolute -top-full left-0 right-0 sm:hidden z-10 border-b border-cyan-500/20 bg-black/90 p-4 backdrop-blur-md transition-[top] duration-300 ease-in-out"
+        >
+            <ul class="flex flex-col gap-2">
+                <li>
+                    <a href={`/${locale}/`}>
+                        <Button className="text-lg" highlighted={page === "index"}> {t(($) => $.index.title)} </Button>
+                    </a>
+                </li>
+                <li>
+                    <a href={`/${locale}/projects`}>
+                        <Button className="text-lg" highlighted={page === "projects"}>
+                            {t(($) => $.projects.title)}
+                        </Button>
+                    </a>
+                </li>
+                <li>
+                    <a href={`/${locale}/contact`}>
+                        <Button className="text-lg" highlighted={page === "contact"}>
+                            {t(($) => $.contact.title)}
+                        </Button>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
         <main class={cn("p-4 max-w-7xl mx-auto my-8", className)}>
             <slot />
         </main>
     </body>
 </html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // eslint-disable-next-line prettier/prettier
+        const btn = document.getElementById("drop-down-btn");
+        const dd = document.getElementById("drop-down");
+
+        if (dd && btn) {
+            btn.addEventListener("click", () => {
+                dd.classList.toggle("drop-down");
+            });
+        }
+    });
+</script>
