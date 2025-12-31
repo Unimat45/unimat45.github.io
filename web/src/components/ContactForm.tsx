@@ -1,10 +1,13 @@
+import { useMutation } from "@tanstack/react-query";
 import i18next from "i18next";
 import { Send } from "lucide-react";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 import { initI18n } from "../lib/i18n";
+import { useTRPC } from "../lib/trpc";
+import { TRPCProvider } from "../lib/trpc";
 
 type FormPayload = { name: string; email: string; message: string };
 type ContactFormProps = { locale: string };
@@ -12,6 +15,9 @@ type ContactFormProps = { locale: string };
 const ContactForm: React.FC<ContactFormProps> = ({ locale }) => {
     const [state, setState] = useState<"sent" | "error" | null>(null);
     const { t } = useTranslation();
+    const trpc = useTRPC();
+
+    const { mutateAsync } = useMutation(trpc.contact.form.mutationOptions());
 
     useMemo(() => {
         if (!i18next.isInitialized) {
@@ -25,17 +31,23 @@ const ContactForm: React.FC<ContactFormProps> = ({ locale }) => {
     const {
         register,
         handleSubmit,
+        reset: formReset,
         formState: { errors },
     } = useForm<FormPayload>();
 
     const onSubmit = async (data: FormPayload) => {
-        const res = await fetch("https://pfk.ddns.net/api/sendmail", {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify(data),
-        }).catch(() => ({ ok: false }));
+        try {
+            await mutateAsync(data);
+            setState("sent");
+            formReset();
+        }
+        catch {
+            setState("error");
+        }
+    };
 
-        setState(res.ok ? "sent" : "error");
+    const onError = () => {
+        setState(null);
     };
 
     return (
@@ -43,7 +55,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ locale }) => {
             <div className="rounded-xl border border-gray-700/50 bg-gray-800/30 p-8 transition-all duration-300 hover:border-cyan-500/50">
                 <h2 className="mb-6 text-2xl font-bold text-white">{t(($) => $.contact.sendMsg)}</h2>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-6">
                     <div>
                         <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-300">
                             {t(($) => $.contact.yourName)}
@@ -120,4 +132,10 @@ const ContactForm: React.FC<ContactFormProps> = ({ locale }) => {
     );
 };
 
-export { ContactForm };
+const Wrapper: React.FC<ContactFormProps> = (props) => (
+    <TRPCProvider>
+        <ContactForm {...props} />
+    </TRPCProvider>
+);
+
+export { Wrapper as ContactForm };
