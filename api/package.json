@@ -1,0 +1,26 @@
+{
+    "name": "api",
+    "module": "index.ts",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "dev": "bun --hot run src/server.ts",
+        "build": "NODE_ENV=production bun run build.ts"
+    },
+    "devDependencies": {
+        "@types/bun": "latest",
+        "@types/cors": "^2.8.19"
+    },
+    "peerDependencies": {
+        "typescript": "^5"
+    },
+    "dependencies": {
+        "@t3-oss/env-core": "^0.13.10",
+        "@tanstack/react-query": "^5.90.16",
+        "@trpc/server": "^11.8.1",
+        "@trpc/tanstack-react-query": "^11.8.1",
+        "cors": "^2.8.5",
+        "superjson": "^2.2.6",
+        "zod": "^4.2.1"
+    }
+}

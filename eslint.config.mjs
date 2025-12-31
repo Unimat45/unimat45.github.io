@@ -9,10 +9,11 @@ import tseslint from "typescript-eslint";
 export default defineConfig(
     {
         ignores: [
-            "dist/*",
+            "*/dist/*",
             "node_modules/*",
-            ".astro/*",
-            "public/*",
+            "*/node_modules/*",
+            "web/.astro/*",
+            "web/public/*",
 
             // Temporary compiled files
             "**/*.ts.build-*.mjs",
