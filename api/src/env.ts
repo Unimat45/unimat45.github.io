@@ -4,7 +4,8 @@ import z from "zod";
 export const env = createEnv({
     server: {
         NODE_ENV: z.enum(["production", "development"]).default("development"),
-        PORT: z.int().default(3000),
+        // Environment variables are always strings: convert before checking.
+        PORT: z.coerce.number().int().default(3000),
         DATABASE_URL: z.url(),
     },
     runtimeEnv: {
