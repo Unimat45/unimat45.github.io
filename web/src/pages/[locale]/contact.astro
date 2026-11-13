@@ -1,34 +1,29 @@
 ---
 import type { GetStaticPaths } from "astro";
 
+import { ContactForm } from "../../components/ContactForm";
+import PageHead from "../../components/PageHead.astro";
+import Layout from "../../layouts/Layout.astro";
+import { initI18n, toLocale } from "../../lib/i18n";
+
+// import { Mail, Phone } from "lucide-react";
+
 export const getStaticPaths = (() => {
     return [{ params: { locale: "fr" } }, { params: { locale: "en" } }];
 }) satisfies GetStaticPaths;
 
-import Layout from "../../layouts/Layout.astro";
-import FancyLastWord from "../../components/FancyLastWord.astro";
-import { initI18n } from "../../lib/i18n";
-// import { Mail, Phone } from "lucide-react";
-import { ContactForm } from "../../components/ContactForm";
-
-const i18n = initI18n(Astro.params);
-const { t } = i18n;
+const locale = toLocale(Astro.params.locale);
+const { t } = initI18n({ locale });
 ---
 
-<Layout page="contact" className="flex flex-col gap-8">
-    <section class="space-y-4 text-center">
-        <h1 class="text-6xl font-bold">
-            {t(($) => $.contact.pageTitle).removeLastWord()}
-            <FancyLastWord>
-                {t(($) => $.contact.pageTitle).getLastWord()}
-            </FancyLastWord>
-        </h1>
+<Layout page="contact" boardCta={false} className="wrap pt-[clamp(2.5rem,6vw,5rem)] pb-(--section)">
+    <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] lg:items-start">
+        <PageHead
+            eyebrow={t(($) => $.global.navContact)}
+            title={t(($) => $.contact.pageTitle)}
+            description={t(($) => $.contact.description)}
+        />
 
-        <h2 class="text-xl text-gray-400">{t(($) => $.contact.description)}</h2>
-        <div class="mx-auto h-1 w-1/12 rounded-full bg-linear-to-r from-cyan-400 to-emerald-400"></div>
-    </section>
-
-    <section class="grid gap-8 md:w-135 md:mx-auto">
         <!-- <div class="space-y-8">
             <div
                 class="rounded-xl border border-gray-700/50 bg-gray-800/30 px-2 py-8 transition-all duration-300 hover:border-cyan-500/50"
@@ -72,6 +67,6 @@ const { t } = i18n;
             </div>
         </div> -->
 
-        <ContactForm locale={Astro.params.locale} client:load />
-    </section>
+        <ContactForm locale={locale} client:load />
+    </div>
 </Layout>

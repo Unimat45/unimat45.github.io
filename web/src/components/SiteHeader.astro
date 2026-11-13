@@ -1,0 +1,211 @@
+---
+import { initI18n, type Locale, type Pages } from "../lib/i18n";
+
+interface Props {
+    locale: Locale;
+    page: Pages;
+}
+
+const { locale, page } = Astro.props;
+const { t } = initI18n({ locale });
+
+const other: Locale = locale === "fr" ? "en" : "fr";
+const { pathname } = Astro.url;
+const otherPath = /^\/(fr|en)(?=\/|$)/.test(pathname) ? pathname.replace(/^\/(fr|en)/, `/${other}`) : `/${other}`;
+---
+
+<header class="site-header" data-site-header>
+    <div class="wrap bar">
+        <a class="brand" href={`/${locale}/`} aria-label="Mathieu Dery">
+            <span class="tile" aria-hidden="true">MD</span>
+            <span class="name">Mathieu Dery</span>
+        </a>
+        <nav class="nav" aria-label={t(($) => $.global.navLabel)}>
+            <a href={`/${locale}/projects`} aria-current={page === "projects" ? "page" : undefined}>
+                {t(($) => $.global.navProjects)}
+            </a>
+            <a href={`/${locale}/contact`} aria-current={page === "contact" ? "page" : undefined}>
+                {t(($) => $.global.navContact)}
+            </a>
+        </nav>
+        <div class="tools">
+            <a
+                class="chip-btn"
+                href={otherPath}
+                hreflang={other}
+                lang={other}
+                aria-label={t(($) => $.global.switchLang)}
+            >
+                {other.toUpperCase()}
+            </a>
+            <button
+                class="chip-btn lamp"
+                type="button"
+                role="switch"
+                aria-checked="true"
+                data-pin="2"
+                aria-label={t(($) => $.global.lights)}
+            >
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                >
+                    <path
+                        class="glass"
+                        d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5z"
+                    ></path>
+                    <path d="M9 18h6M10 22h4"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</header>
+
+<style>
+    .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: color-mix(in srgb, var(--bg) 86%, transparent);
+        -webkit-backdrop-filter: blur(12px) saturate(1.2);
+        backdrop-filter: blur(12px) saturate(1.2);
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.3s;
+    }
+
+    .site-header.scrolled {
+        border-bottom-color: var(--line);
+    }
+
+    .bar {
+        display: flex;
+        align-items: center;
+        gap: clamp(0.7rem, 2.5vw, 2rem);
+        height: 4.25rem;
+    }
+
+    .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin-right: auto;
+        text-decoration: none;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+    }
+
+    .tile {
+        display: grid;
+        place-items: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 0.55rem;
+        background: var(--board);
+        color: var(--board-ink);
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+    }
+
+    .nav {
+        display: flex;
+        gap: clamp(0.9rem, 2.5vw, 1.9rem);
+    }
+
+    .nav a {
+        position: relative;
+        padding: 0.5rem 0;
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--ink-2);
+        transition: color 0.25s;
+    }
+
+    .nav a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0.2rem;
+        height: 2px;
+        background: var(--accent-strong);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s var(--ease);
+    }
+
+    .nav a:hover,
+    .nav a[aria-current="page"] {
+        color: var(--ink);
+    }
+
+    .nav a:hover::after,
+    .nav a[aria-current="page"]::after {
+        transform: scaleX(1);
+    }
+
+    .tools {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .chip-btn {
+        display: inline-grid;
+        place-items: center;
+        min-width: 2.5rem;
+        height: 2.5rem;
+        padding: 0 0.7rem;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-decoration: none;
+        color: var(--ink-2);
+        cursor: pointer;
+        transition:
+            border-color 0.25s,
+            color 0.25s;
+    }
+
+    .chip-btn:hover {
+        border-color: var(--ink-3);
+        color: var(--ink);
+    }
+
+    .lamp {
+        padding: 0;
+    }
+
+    .lamp svg {
+        width: 1.15rem;
+        height: 1.15rem;
+    }
+
+    .lamp[aria-checked="true"] {
+        color: var(--accent-strong);
+    }
+
+    .lamp[aria-checked="true"] .glass {
+        fill: currentColor;
+        fill-opacity: 0.22;
+    }
+
+    @media (max-width: 30rem) {
+        .name {
+            display: none;
+        }
+
+        .bar {
+            height: 3.75rem;
+        }
+    }
+</style>

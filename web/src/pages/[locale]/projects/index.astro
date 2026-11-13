@@ -1,33 +1,31 @@
 ---
 import type { GetStaticPaths } from "astro";
 
+import PageHead from "../../../components/PageHead.astro";
+import { Projects } from "../../../components/Projects";
+import Layout from "../../../layouts/Layout.astro";
+import { initI18n, toLocale } from "../../../lib/i18n";
+
 export const getStaticPaths = (() => {
     return [{ params: { locale: "fr" } }, { params: { locale: "en" } }];
 }) satisfies GetStaticPaths;
 
-import { initI18n } from "../../../lib/i18n";
+const locale = toLocale(Astro.params.locale);
+const { t } = initI18n({ locale });
 
-import FancyLastWord from "../../../components/FancyLastWord.astro";
-import Layout from "../../../layouts/Layout.astro";
-import { Projects as IntProjects } from "../../../components/Projects";
-
-const { t } = initI18n(Astro.params);
-
-const { locale } = Astro.params;
+const labels = {
+    all: t(($) => $.projects.filterAll),
+    demo: t(($) => $.global.demo),
+    code: t(($) => $.global.code),
+};
 ---
 
-<Layout page="projects" className="flex flex-col items-center gap-8">
-    <section class="space-y-4 text-center">
-        <h1 class="text-6xl font-bold">
-            {t(($) => $.projects.title).removeLastWord()}
-            <FancyLastWord>
-                {t(($) => $.projects.title).getLastWord()}
-            </FancyLastWord>
-        </h1>
+<Layout page="projects" className="wrap pt-[clamp(2.5rem,6vw,5rem)] pb-(--section)">
+    <PageHead
+        eyebrow={t(($) => $.global.navProjects)}
+        title={t(($) => $.projects.title)}
+        description={t(($) => $.projects.description)}
+    />
 
-        <h2 class="text-xl text-gray-400">{t(($) => $.projects.description)}</h2>
-        <div class="mx-auto h-1 w-1/4 rounded-full bg-linear-to-r from-cyan-400 to-emerald-400"></div>
-    </section>
-
-    <IntProjects locale={locale} client:load />
+    <Projects locale={locale} labels={labels} client:load />
 </Layout>

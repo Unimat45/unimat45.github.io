@@ -1,13 +1,12 @@
 ---
-import { initI18n, type Pages } from "../lib/i18n/index";
-
-import "../styles/global.css";
-import "../lib/strings";
-
 import { Seo } from "astro-seo-meta";
-import Button from "../components/Button.astro";
+
+import Board from "../components/Board.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import { initI18n, toLocale, type Pages } from "../lib/i18n/index";
+import "../lib/strings";
 import { cn } from "../lib/utils";
-import { Menu } from "lucide-react";
+import "../styles/global.css";
 
 interface Props {
     className?: string;
@@ -15,27 +14,49 @@ interface Props {
     title?: string;
     description?: string;
     image?: string;
+    /** Show the footer's call to action (off on the contact page). */
+    boardCta?: boolean;
+    /** Draw the trace into the footer (homepage, where the project stack sits above it). */
+    boardTrace?: boolean;
 }
 
-const { pathname } = Astro.url;
-const { locale = "fr" } = Astro.params;
-const { className, page, title, description, image } = Astro.props;
+const locale = toLocale(Astro.params.locale);
+const { className, page, title, description, image, boardCta = true, boardTrace = false } = Astro.props;
 
-const { t } = initI18n(Astro.params);
-const localizedPath = (currentLocale: string) => {
-    const newLocale = currentLocale === "fr" ? "en" : "fr";
-    return pathname.replace(currentLocale, newLocale);
-};
+const { t } = initI18n({ locale });
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale} data-theme="light">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+        <meta name="color-scheme" content="light dark" />
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="manifest" type="application/json" href="/manifest.json" />
+        <link rel="preload" href="/fonts/bricolage-grotesque.woff2" as="font" type="font/woff2" crossorigin />
+        <link rel="preload" href="/fonts/ibm-plex-mono-500.woff2" as="font" type="font/woff2" crossorigin />
         <meta name="generator" content={Astro.generator} />
+
+        <script is:inline>
+            /* eslint-disable prettier/prettier -- the rule parses inline scripts as Astro markup and rejects any {} block */
+            // Settle the theme before first paint: the visitor's last choice, else their system setting.
+            {
+                const root = document.documentElement;
+                let theme = null;
+                try {
+                    theme = localStorage.getItem("md-lights");
+                }
+                catch {
+                    theme = null;
+                }
+                if (theme !== "light" && theme !== "dark") {
+                    theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+                }
+                root.dataset.theme = theme;
+                root.classList.add("js");
+            }
+        </script>
 
         <Seo
             title={t(($) => $.global.title, { title: title || t(($) => $[page].title) })}
@@ -52,82 +73,18 @@ const localizedPath = (currentLocale: string) => {
             }}
         />
     </head>
-    <body
-        class="grid min-h-screen grid-rows-[auto_1fr_auto] bg-linear-to-br from-gray-900 via-black to-gray-900 text-gray-300"
-    >
-        <header class="border-b border-cyan-500/20 bg-black/90 p-4 backdrop-blur-md z-20">
-            <nav class="mx-auto max-w-7xl">
-                <ul class="flex gap-2">
-                    <li id="drop-down-btn" class="flex justify-center items-center sm:hidden">
-                        <Menu />
-                    </li>
-                    <li class="hidden sm:block">
-                        <a href={`/${locale}/`}>
-                            <Button highlighted={page === "index"}> {t(($) => $.index.title)} </Button>
-                        </a>
-                    </li>
-                    <li class="hidden sm:block">
-                        <a href={`/${locale}/projects`}>
-                            <Button highlighted={page === "projects"}> {t(($) => $.projects.title)} </Button>
-                        </a>
-                    </li>
-                    <li class="hidden sm:block">
-                        <a href={`/${locale}/contact`}>
-                            <Button highlighted={page === "contact"}> {t(($) => $.contact.title)} </Button>
-                        </a>
-                    </li>
-                    <li class="ml-auto">
-                        <a href={localizedPath(locale)}>
-                            <Button>{locale === "fr" ? "English" : "Français"}</Button>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </header>
+    <body class="flex min-h-screen flex-col">
+        <a class="skip" href="#content">{t(($) => $.global.skip)}</a>
+        <SiteHeader locale={locale} page={page} />
 
-        <div
-            id="drop-down"
-            class="absolute -top-full left-0 right-0 sm:hidden z-10 border-b border-cyan-500/20 bg-black/90 p-4 backdrop-blur-md transition-[top] duration-300 ease-in-out"
-        >
-            <ul class="flex flex-col gap-2">
-                <li>
-                    <a href={`/${locale}/`}>
-                        <Button className="text-lg" highlighted={page === "index"}> {t(($) => $.index.title)} </Button>
-                    </a>
-                </li>
-                <li>
-                    <a href={`/${locale}/projects`}>
-                        <Button className="text-lg" highlighted={page === "projects"}>
-                            {t(($) => $.projects.title)}
-                        </Button>
-                    </a>
-                </li>
-                <li>
-                    <a href={`/${locale}/contact`}>
-                        <Button className="text-lg" highlighted={page === "contact"}>
-                            {t(($) => $.contact.title)}
-                        </Button>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <main class={cn("p-4 max-w-7xl mx-auto my-8 w-full", className)}>
+        <main id="content" class={cn("flex-1", className)}>
             <slot />
         </main>
+
+        <Board locale={locale} cta={boardCta} trace={boardTrace} />
+
+        <script>
+            import "../scripts/site.ts";
+        </script>
     </body>
 </html>
-
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        // eslint-disable-next-line prettier/prettier
-        const btn = document.getElementById("drop-down-btn");
-        const dd = document.getElementById("drop-down");
-
-        if (dd && btn) {
-            btn.addEventListener("click", () => {
-                dd.classList.toggle("drop-down");
-            });
-        }
-    });
-</script>

@@ -1,10 +1,11 @@
 ---
 import type { GetStaticPaths } from "astro";
-import { projects } from "../../../assets/projects";
-import Layout from "../../../layouts/Layout.astro";
-import { ArrowLeft, ExternalLink, Github } from "lucide-react";
-import { initI18n } from "../../../lib/i18n";
+import { ArrowLeft, ArrowUpRight } from "lucide-react";
+
+import { layers, projects } from "../../../assets/projects";
 import { ProjectCarousel } from "../../../components/ProjectCarousel";
+import Layout from "../../../layouts/Layout.astro";
+import { initI18n, toLocale } from "../../../lib/i18n";
 
 export const getStaticPaths = (() => {
     return [
@@ -17,7 +18,8 @@ export const getStaticPaths = (() => {
     ];
 }) satisfies GetStaticPaths;
 
-const { slug, locale } = Astro.params;
+const { slug } = Astro.params;
+const locale = toLocale(Astro.params.locale);
 const { t } = initI18n({ locale });
 
 const project = projects.find((p) => p.slug === slug);
@@ -25,98 +27,89 @@ const project = projects.find((p) => p.slug === slug);
 if (!project) {
     throw new Error(`Slug not found: ${slug}`);
 }
+
+const description = locale === "fr" ? project.description_fr : project.description_en;
+const depth = project.depth === 0 ? "0" : `−${Math.abs(project.depth)}`;
+const card = "rounded-2xl border border-line bg-surface p-6 md:p-8";
+const linkCard =
+    "group flex items-center justify-between gap-3 rounded-xl border border-line px-4 py-3 font-semibold transition-colors hover:border-accent-strong hover:text-accent";
 ---
 
 <Layout
     page="projects"
     title={project.title}
-    description={locale === "fr" ? project.description_fr : project.description_en}
+    description={description}
     image={`/images/projets/${slug}/logo.webp`}
+    className="wrap pt-[clamp(2rem,5vw,4rem)] pb-(--section)"
 >
-    <a href={`/${locale}/projects`} class="block w-fit">
-        <button
-            class="group mb-8 flex cursor-pointer items-center space-x-2 text-cyan-400 transition-colors hover:text-cyan-300"
-        >
-            <ArrowLeft className="transition-transform group-hover:-translate-x-1" size={20} />
-            <span>{t(($) => $.projects.back)}</span>
-        </button>
+    <a href={`/${locale}/projects`} class="text-link mb-8">
+        <ArrowLeft aria-hidden="true" />
+        <span>{t(($) => $.projects.back)}</span>
     </a>
 
-    <div class="relative h-96 overflow-hidden rounded-2xl border border-gray-700/50 shadow-2xl shadow-cyan-500/20">
-        <ProjectCarousel slug={slug} nbr_images={project.nbr_images} client:load />
-        <div class="absolute inset-0 bg-linear-to-t from-gray-900 to-transparent opacity-60"></div>
-    </div>
-
-    <div>
-        <h1 class="mt-8 mb-4 text-5xl font-bold text-white md:text-6xl">
-            {project.title}
-        </h1>
-        <div class="ml-1 h-1 w-24 rounded-full bg-linear-to-r from-cyan-400 to-emerald-400"></div>
-    </div>
-
-    <div class="mt-8 rounded-xl border border-cyan-500/20 bg-linear-to-br from-cyan-500/5 to-emerald-500/5 p-8">
-        <h3 class="mb-4 text-2xl font-bold text-white">{t(($) => $.projects.overview)}</h3>
-        <p class="text-lg leading-relaxed text-gray-300">
-            {locale === "fr" ? project.description_fr : project.description_en}
+    <header class="mt-8" data-reveal>
+        <p class="eyebrow">{depth} · {layers[project.layer][locale]}</p>
+        <h1 class="display mt-4 text-[clamp(2.6rem,7vw,5rem)]">{project.title}</h1>
+        <p class="mt-5 max-w-2xl text-lg text-ink-2">
+            {locale === "fr" ? project.summary_fr : project.summary_en}
         </p>
+    </header>
+
+    <div class="mt-10 h-72 overflow-hidden rounded-2xl border border-line bg-surface md:h-96">
+        <ProjectCarousel slug={project.slug} nbr_images={project.nbr_images} client:load />
     </div>
 
-    <div class="grid gap-8 pt-8 md:grid-cols-2">
-        <div class="rounded-xl border border-gray-700/50 bg-gray-800/30 p-8 transition-all hover:border-cyan-500/50">
-            <h3 class="mb-4 text-lg font-semibold text-white">{t(($) => $.projects.tech)}</h3>
-            <div class="flex flex-wrap gap-2">
-                {
-                    project.tags.map((tag) => (
-                        <span class="cursor-default rounded-full border border-cyan-500/20 bg-cyan-500/10 px-4 py-2 text-sm font-medium text-cyan-400 transition-colors hover:bg-cyan-500/20">
-                            {tag}
-                        </span>
-                    ))
-                }
-            </div>
-        </div>
+    <div class="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <section class={card}>
+            <h2 class="text-2xl font-bold [font-stretch:90%]">{t(($) => $.projects.overview)}</h2>
+            <p class="mt-4 text-lg leading-relaxed text-ink-2">{description}</p>
+        </section>
 
-        <div class="rounded-xl border border-gray-700/50 bg-gray-800/30 p-8 transition-all hover:border-cyan-500/50">
-            <h3 class="mb-4 text-lg font-semibold text-white">
-                {t(($) => $.projects.link, { count: project.has_code && project.has_demo ? 2 : 1 })}
-            </h3>
-            <div class="grid gap-3 sm:grid-cols-2">
-                {
-                    project.has_demo && (
-                        <a
-                            href={project.link_demo}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="group flex items-center space-x-3 rounded-lg border border-cyan-500/30 bg-linear-to-r from-cyan-500/10 to-emerald-500/10 p-3 transition-all hover:border-cyan-500 hover:from-cyan-500/20 hover:to-emerald-500/20"
-                        >
-                            <ExternalLink
-                                size={20}
-                                className="text-cyan-400 transition-transform group-hover:translate-x-1"
-                            />
-                            <span class="text-gray-300 transition-colors group-hover:text-white">
-                                {t(($) => $.projects.link_demo)}
-                            </span>
-                        </a>
-                    )
-                }
-                {
-                    project.has_code && (
-                        <a
-                            href={project.link_code}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="group flex items-center space-x-3 rounded-lg border border-cyan-500/30 bg-linear-to-r from-cyan-500/10 to-emerald-500/10 p-3 transition-all hover:border-cyan-500 hover:from-cyan-500/20 hover:to-emerald-500/20"
-                        >
-                            <Github
-                                size={20}
-                                className="text-cyan-400 transition-transform group-hover:translate-x-1"
-                            />
-                            <span class="text-gray-300 transition-colors group-hover:text-white">
-                                {t(($) => $.projects.link_code)}
-                            </span>
-                        </a>
-                    )
-                }
-            </div>
+        <div class="grid content-start gap-6">
+            <section class={card}>
+                <h2 class="eyebrow">{t(($) => $.projects.tech)}</h2>
+                <ul class="mt-4 flex flex-wrap gap-2">
+                    {
+                        project.tags.map((tag) => (
+                            <li class="rounded-full border border-line px-3 py-1 font-mono text-xs text-ink-2">
+                                {tag}
+                            </li>
+                        ))
+                    }
+                </ul>
+            </section>
+
+            <section class={card}>
+                <h2 class="eyebrow">
+                    {t(($) => $.projects.link, { count: project.has_code && project.has_demo ? 2 : 1 })}
+                </h2>
+                <div class="mt-4 grid gap-3">
+                    {
+                        project.has_demo && (
+                            <a href={project.link_demo} target="_blank" rel="noopener noreferrer" class={linkCard}>
+                                <span>{t(($) => $.projects.link_demo)}</span>
+                                <ArrowUpRight
+                                    size={18}
+                                    className="text-accent-strong transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                                    aria-hidden="true"
+                                />
+                            </a>
+                        )
+                    }
+                    {
+                        project.has_code && (
+                            <a href={project.link_code} target="_blank" rel="noopener noreferrer" class={linkCard}>
+                                <span>{t(($) => $.projects.link_code)}</span>
+                                <ArrowUpRight
+                                    size={18}
+                                    className="text-accent-strong transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                                    aria-hidden="true"
+                                />
+                            </a>
+                        )
+                    }
+                </div>
+            </section>
         </div>
     </div>
 </Layout>

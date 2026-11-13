@@ -1,69 +1,344 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Fonts (SIL Open Font License), self-hosted latin subsets. */
+@font-face {
+    font-family: "Bricolage Grotesque";
+    font-style: normal;
+    font-weight: 200 800;
+    font-stretch: 75% 100%;
+    font-display: swap;
+    src: url("/fonts/bricolage-grotesque.woff2") format("woff2");
+}
+@font-face {
+    font-family: "IBM Plex Mono";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/ibm-plex-mono-400.woff2") format("woff2");
+}
+@font-face {
+    font-family: "IBM Plex Mono";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url("/fonts/ibm-plex-mono-500.woff2") format("woff2");
+}
+@font-face {
+    font-family: "IBM Plex Mono";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("/fonts/ibm-plex-mono-600.woff2") format("woff2");
+}
+
+/*
+ * Design tokens. The raw custom properties below are what components read; the @theme block
+ * exposes them to Tailwind (bg-surface, text-ink-2, border-line, text-accent...).
+ */
+:root {
+    --sans: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+    /* The board (portrait card, footer) keeps its colours in both themes. */
+    --board: #0e3b2d;
+    --board-deep: #092a20;
+    --board-ink: #e9efe6;
+    --board-ink-2: #a9bdb0;
+    --board-line: rgb(233 239 230 / 0.16);
+    --board-copper: #f0915a;
+
+    /* Lights on */
+    --bg: #f1f3ec;
+    --surface: #fafbf7;
+    --ink: #0f1f19;
+    --ink-2: #44524a;
+    --ink-3: #5f6b63;
+    --line: #d3d9cd;
+    --accent: #b9491c; /* copper, dark enough for body-size text */
+    --accent-strong: #d45a22; /* copper for large type, traces and fills */
+
+    --gutter: clamp(1.25rem, 4.5vw, 3rem);
+    --section: clamp(4rem, 9vw, 7.5rem);
+    --run: clamp(2.5rem, 5vw, 4rem); /* the trace's last run, from the final project into the board */
+    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    color-scheme: light;
+}
+
+/* Lights off */
+[data-theme="dark"] {
+    --bg: #09120f;
+    --surface: #0f1b16;
+    --ink: #e7ece4;
+    --ink-2: #a7b3aa;
+    --ink-3: #7c8a81;
+    --line: #213129;
+    --accent: #f0915a;
+    --accent-strong: #f0915a;
+    color-scheme: dark;
+}
+
 @theme {
     --breakpoint-xs: 30rem;
 }
 
+@theme inline {
+    --font-sans: var(--sans);
+    --font-mono: var(--mono);
+
+    --color-bg: var(--bg);
+    --color-surface: var(--surface);
+    --color-ink: var(--ink);
+    --color-ink-2: var(--ink-2);
+    --color-ink-3: var(--ink-3);
+    --color-line: var(--line);
+    --color-accent: var(--accent);
+    --color-accent-strong: var(--accent-strong);
+    --color-board: var(--board);
+    --color-board-ink: var(--board-ink);
+    --color-board-ink-2: var(--board-ink-2);
+    --color-board-copper: var(--board-copper);
+}
+
 @layer base {
-    * {
-        scroll-behavior: smooth;
+    html {
+        scroll-padding-top: 5.5rem;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        html {
+            scroll-behavior: smooth;
+        }
     }
 
     body {
-        @apply antialiased;
-    }
-}
-.drop-down {
-    @apply top-17.5;
-}
-
-@layer utilities {
-    .animate-fade-in {
-        animation: fadeIn 0.8s ease-out forwards;
+        background: var(--bg);
+        color: var(--ink);
+        font-size: 1.0625rem;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        overflow-x: clip;
     }
 
-    .animate-fade-in-delay {
-        animation: fadeIn 0.8s ease-out 0.3s forwards;
+    h2,
+    h3 {
+        text-wrap: balance;
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--accent-strong);
+        outline-offset: 3px;
+        border-radius: 4px;
+    }
+
+    ::selection {
+        background: var(--accent-strong);
+        color: #fff;
+    }
+}
+
+@layer components {
+    .wrap {
+        width: min(100% - 2 * var(--gutter), 74rem);
+        margin-inline: auto;
+    }
+
+    .eyebrow {
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+    }
+
+    /* Heavy, slightly condensed display type; pair with a size utility. */
+    .display {
+        font-weight: 800;
+        font-stretch: 87%;
+        line-height: 0.95;
+        letter-spacing: -0.025em;
+    }
+
+    .skip {
+        position: absolute;
+        left: 1rem;
+        top: -5rem;
+        z-index: 50;
+        padding: 0.6rem 1rem;
+        border-radius: 0.5rem;
+        background: var(--ink);
+        color: var(--bg);
+    }
+
+    .skip:focus {
+        top: 1rem;
+    }
+
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.9rem 1.6rem;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        min-height: 3.1rem;
+        padding: 0.7rem 1.4rem;
+        border-radius: 1.55rem;
+        background: var(--ink);
+        color: var(--bg);
+        font-weight: 600;
+        text-decoration: none;
+        transition:
+            background-color 0.25s,
+            transform 0.25s var(--ease);
+    }
+
+    .btn svg {
+        width: 1.05rem;
+        height: 1.05rem;
+        flex: none;
+        transition: transform 0.3s var(--ease);
+    }
+
+    .btn:hover {
+        background: var(--accent);
+    }
+
+    .btn:hover svg {
+        transform: translateX(3px);
+    }
+
+    .btn:active {
+        transform: scale(0.98);
+    }
+
+    .text-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-weight: 600;
+        text-decoration: underline;
+        text-decoration-color: var(--line);
+        text-decoration-thickness: 2px;
+        text-underline-offset: 0.35em;
+        transition: text-decoration-color 0.25s;
+    }
+
+    .text-link:hover {
+        text-decoration-color: var(--accent-strong);
+    }
+
+    .text-link svg {
+        width: 1rem;
+        height: 1rem;
+        flex: none;
+    }
+
+    /* The copper trace: one segment per layer of the stack, filled as the page scrolls. */
+    .seg {
+        position: absolute;
+        left: 6px;
+        top: var(--via);
+        width: 2px;
+        height: 100%;
+        overflow: hidden;
+        background: var(--line);
+    }
+
+    .seg i {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: var(--accent-strong);
+        transform-origin: top;
+    }
+
+    .js .seg i {
+        transform: scaleY(var(--p, 0));
+    }
+
+    .via {
+        position: absolute;
+        left: 0;
+        top: calc(var(--via) - 7px);
+        z-index: 1;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--accent-strong);
+        box-shadow: 0 0 0 4px var(--bg);
+        transition:
+            background-color 0.3s,
+            box-shadow 0.3s;
+    }
+
+    .js .via:not(.on) {
+        background: var(--bg);
+        box-shadow:
+            0 0 0 4px var(--bg),
+            inset 0 0 0 2px var(--line);
+    }
+}
+
+/* Reveal on entry; the class is added by src/scripts/site.ts. */
+@media (prefers-reduced-motion: no-preference) {
+    .js [data-reveal] {
         opacity: 0;
+        transform: translateY(1.1rem);
+        transition:
+            opacity 0.7s var(--ease),
+            transform 0.7s var(--ease);
+        transition-delay: var(--d, 0s);
     }
 
-    .animate-float {
-        animation: float 6s ease-in-out infinite;
+    .js [data-reveal].in {
+        opacity: 1;
+        transform: none;
     }
+}
 
-    .animate-float-delay {
-        animation: float 6s ease-in-out 2s infinite;
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0s !important;
     }
+}
 
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+/* Lights on / off spreads from the switch that was flipped. */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+    z-index: 1;
+}
+
+::view-transition-new(root) {
+    z-index: 2;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
     }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes float {
-        0%,
-        100% {
-            transform: translateY(0px);
-        }
-        50% {
-            transform: translateY(-20px);
-        }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
