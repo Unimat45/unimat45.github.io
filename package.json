@@ -8,24 +8,25 @@
         "dev:api": "bun run --filter ./api dev",
         "dev:web": "bun run --filter ./web dev",
         "build": "bun run --filter ./web build",
+        "check": "bun run --filter ./web check && bun check -p api",
         "lint": "bunx --bun eslint . --cache",
         "prettier:fix": "bunx --bun prettier --write \"**/*.{ts,tsx,js,jsx,mdx,astro}\" --cache",
         "prettier:check": "bunx --bun prettier --check \"**/*.{ts,tsx,js,jsx,mdx,astro}\" --cache"
     },
     "devDependencies": {
-        "@eslint/js": "^9.39.2",
-        "@trivago/prettier-plugin-sort-imports": "^6.0.0",
-        "@typescript-eslint/parser": "^8.50.1",
-        "eslint": "^9.39.2",
+        "@eslint/js": "^10.0.1",
+        "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+        "@typescript-eslint/parser": "^8.72.2",
+        "eslint": "^10.14.0",
         "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-astro": "^1.5.0",
+        "eslint-plugin-astro": "^3.2.1",
         "eslint-plugin-jsx-a11y": "^6.10.2",
-        "eslint-plugin-prettier": "^5.5.4",
+        "eslint-plugin-prettier": "^5.5.7",
         "eslint-plugin-react": "^7.37.5",
-        "prettier": "^3.7.4",
+        "prettier": "^3.10.1",
         "prettier-plugin-astro": "^0.14.1",
-        "prettier-plugin-brace-style": "^0.8.2",
-        "prettier-plugin-merge": "^0.8.0",
-        "typescript-eslint": "^8.50.1"
+        "prettier-plugin-brace-style": "^0.10.4",
+        "prettier-plugin-merge": "^0.10.2",
+        "typescript-eslint": "^8.72.2"
     }
 }
