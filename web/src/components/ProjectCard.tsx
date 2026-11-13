@@ -1,77 +1,80 @@
-import { ExternalLink, Github } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import type React from "react";
 
-import type { Project } from "../assets/projects";
+import { layers, type Project } from "../assets/projects";
 
 interface Props {
     index: number;
-    locale: string;
+    locale: "fr" | "en";
     project: Project;
+    labels: { demo: string; code: string };
 }
 
-export const ProjectCard: React.FC<Props> = ({ index, locale, project }) => {
+const linkClass =
+    "inline-flex items-center gap-1 py-1 font-mono text-[0.8rem] font-medium underline decoration-line decoration-[1.5px] underline-offset-[0.3em] transition-colors hover:text-accent hover:decoration-accent-strong";
+
+export const ProjectCard: React.FC<Props> = ({ index, locale, project, labels }) => {
+    const depth = project.depth === 0 ? "0" : `−${Math.abs(project.depth)}`;
+
     return (
-        <div
-            className="group relative cursor-pointer overflow-hidden rounded-xl border border-gray-700/50 bg-gray-800/30 transition-all duration-300 hover:-translate-y-2 hover:border-cyan-500/50 hover:shadow-2xl hover:shadow-cyan-500/20"
+        <article
+            className="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-surface transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_-22px_rgb(15_31_25/0.5)]"
             style={{
                 animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`,
             }}
         >
-            <div className="absolute top-0 right-0 -z-10 size-50 overflow-hidden opacity-25">
+            <div className="aspect-[1024/450] overflow-hidden border-b border-line">
                 <img
-                    src={`/images/projets/${project.slug}/logo.webp`}
-                    alt={project.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    src={`/images/projets/${project.slug}/thumb.webp`}
+                    width={720}
+                    height={316}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                 />
-                <div className="absolute inset-0 bg-linear-to-r from-gray-800 to-transparent"></div>
             </div>
 
-            <a href={`/${locale}/projects/${project.slug}`} className="block p-6 pb-0">
-                <h3 className="mb-2 text-2xl font-bold text-white transition-colors group-hover:text-cyan-400">
-                    {project.title}
-                </h3>
-                <p className="mb-4 line-clamp-3 text-gray-400">
-                    {locale === "fr" ? project.description_fr : project.description_en}
+            <div className="flex flex-1 flex-col p-6">
+                <p className="font-mono text-xs font-medium tracking-[0.09em] text-ink-3 uppercase">
+                    {depth} · {layers[project.layer][locale]}
                 </p>
+                <h3 className="mt-2 text-2xl leading-tight font-bold tracking-tight [font-stretch:90%]">
+                    <a
+                        href={`/${locale}/projects/${project.slug}`}
+                        className="transition-colors after:absolute after:inset-0 group-hover:text-accent"
+                    >
+                        {project.title}
+                    </a>
+                </h3>
+                <p className="mt-2 text-ink-2">{locale === "fr" ? project.summary_fr : project.summary_en}</p>
 
-                <div className="mb-4 flex flex-wrap gap-2">
+                <ul className="mt-4 flex flex-wrap gap-1.5">
                     {project.tags.map((tag) => (
-                        <span
+                        <li
                             key={tag}
-                            className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-400"
+                            className="rounded-full border border-line px-2.5 py-0.5 font-mono text-[0.72rem] text-ink-2"
                         >
                             {tag}
-                        </span>
+                        </li>
                     ))}
-                </div>
-            </a>
+                </ul>
 
-            <div className="p-6 pt-0">
-                <div className="flex space-x-3 border-t border-gray-700/50 pt-4">
+                <div className="relative z-10 mt-auto flex w-fit gap-5 pt-5">
                     {project.has_demo && (
-                        <a
-                            href={project.link_demo}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex flex-1 items-center justify-center space-x-2 rounded-lg bg-linear-to-r from-cyan-500 to-emerald-500 px-4 py-2 text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/50"
-                        >
-                            <ExternalLink size={16} />
-                            <span>Demo</span>
+                        <a href={project.link_demo} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                            {labels.demo}
+                            <ArrowUpRight size={13} aria-hidden="true" />
                         </a>
                     )}
                     {project.has_code && (
-                        <a
-                            href={project.link_code}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex flex-1 items-center justify-center space-x-2 rounded-lg bg-gray-700/50 px-4 py-2 text-sm font-semibold text-gray-300 transition-all duration-300 hover:bg-gray-700"
-                        >
-                            <Github size={16} />
-                            <span>Code</span>
+                        <a href={project.link_code} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                            {labels.code}
+                            <ArrowUpRight size={13} aria-hidden="true" />
                         </a>
                     )}
                 </div>
             </div>
-        </div>
+        </article>
     );
 };

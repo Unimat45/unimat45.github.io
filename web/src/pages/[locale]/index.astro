@@ -1,99 +1,19 @@
 ---
 import type { GetStaticPaths } from "astro";
 
+import Hero from "../../components/home/Hero.astro";
+import Stack from "../../components/home/Stack.astro";
+import Layout from "../../layouts/Layout.astro";
+import { toLocale } from "../../lib/i18n";
+
 export const getStaticPaths = (() => {
     return [{ params: { locale: "fr" } }, { params: { locale: "en" } }];
 }) satisfies GetStaticPaths;
 
-import { Image } from "astro:assets";
-import Layout from "../../layouts/Layout.astro";
-import Face from "../../assets/face.webp";
-
-import { Github, Mail } from "lucide-react";
-import Button from "../../components/Button.astro";
-import HomeCard from "../../components/HomeCard.astro";
-import FancyLastWord from "../../components/FancyLastWord.astro";
-
-import { initI18n } from "../../lib/i18n";
-
-const { locale } = Astro.params;
-const { t } = initI18n(Astro.params);
+const locale = toLocale(Astro.params.locale);
 ---
 
-<Layout page="index" className="flex flex-col justify-between gap-8">
-    <div class="flex flex-col-reverse items-center justify-between gap-4 md:flex-row">
-        <section class="animate-fade-in flex flex-col gap-4">
-            <span
-                class="bg-linear-to-r from-cyan-400 to-emerald-400 bg-clip-text text-xl font-semibold text-transparent"
-                >{t(($) => $.index.hello)}</span
-            >
-            <div>
-                <h1 class="text-6xl lg:text-8xl font-bold">Mathieu</h1>
-                <div class="ml-1 h-1 w-1/4 rounded-full bg-linear-to-r from-cyan-400 to-emerald-400"></div>
-            </div>
-            <span class="text-2xl font-bold">{t(($) => $.index.jobTitle)}</span>
-            <p class="mt-4 sm:max-w-2/3">
-                {t(($) => $.index.description).removeLastWord()}
-                <FancyLastWord>
-                    {t(($) => $.index.description).getLastWord()}
-                </FancyLastWord>
-            </p>
-            <div class="flex gap-2">
-                <a target="_blank" href="https://github.com/unimat45" title={t(($) => $.index.github)}>
-                    <Button className="w-fit">
-                        <Github />
-                    </Button>
-                </a>
-                <a href={`/${locale}/contact`} title={t(($) => $.index.email)}>
-                    <Button className="w-fit">
-                        <Mail />
-                    </Button>
-                </a>
-            </div>
-        </section>
-        <section>
-            <div class="animate-fade-in-delay order-1 flex justify-center md:order-2">
-                <div class="relative">
-                    <div
-                        class="absolute inset-0 animate-pulse rounded-2xl bg-linear-to-r from-cyan-500 to-emerald-500 opacity-30 blur-2xl"
-                    >
-                    </div>
-                    <div
-                        class="relative size-60 overflow-hidden rounded-2xl border-2 border-cyan-500/30 shadow-2xl shadow-cyan-500/20 lg:size-96"
-                    >
-                        <Image src={Face} alt={t(($) => $.index.imageAlt)} class="h-full w-full object-cover" />
-                    </div>
-                    <div
-                        class="animate-float absolute -right-4 -bottom-4 h-24 w-24 rounded-lg bg-linear-to-br from-cyan-500 to-emerald-500 opacity-20"
-                    >
-                    </div>
-                    <div
-                        class="animate-float-delay absolute -top-4 -left-4 h-32 w-32 rounded-full bg-linear-to-br from-emerald-500 to-cyan-500 opacity-10"
-                    >
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-    <section class="grid gap-8 sm:grid-cols-4">
-        <HomeCard stat="50+" label={t(($) => $.index.projects)} />
-        <HomeCard stat="15+" label={t(($) => $.index.clients)} />
-        <HomeCard id="age" stat="3+" label={t(($) => $.index.exp)} />
-        <HomeCard stat="100%" label={t(($) => $.index.satisfaction)} />
-    </section>
+<Layout page="index" boardTrace>
+    <Hero locale={locale} />
+    <Stack locale={locale} />
 </Layout>
-
-<script>
-    document.addEventListener("astro:page-load", () => {
-        // eslint-disable-next-line prettier/prettier
-        const age = document.getElementById("age");
-
-        function calculateAge(dt: Date) {
-            return Math.floor((Date.now() - dt.getTime()) / 1000 / 31536000);
-        }
-
-        if (age) {
-            age.textContent = `${calculateAge(new Date(2022, 0))}+`;
-        }
-    });
-</script>

@@ -1,0 +1,351 @@
+---
+import { initI18n, type Locale } from "../lib/i18n";
+
+interface Props {
+    locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { t } = initI18n({ locale });
+
+/* A DB-25 connector: pins 1 to 13 on the top row, 14 to 25 below. Data lines 2 to 9 are switchable. */
+const topRow = Array.from({ length: 13 }, (_, i) => i + 1);
+const bottomRow = Array.from({ length: 12 }, (_, i) => i + 14);
+const isData = (n: number) => n >= 2 && n <= 9;
+const pinLabel = (n: number) => {
+    const name = n === 2 ? t(($) => $.global.lights) : n === 3 ? t(($) => $.global.pool) : "";
+    return `${t(($) => $.global.pin)} ${n}${name ? ` · ${name}` : ""}`;
+};
+---
+
+<section
+    class="pport"
+    aria-labelledby="pport-title"
+    data-pport
+    data-lights-on={t(($) => $.global.lightsOn)}
+    data-lights-off={t(($) => $.global.lightsOff)}
+    data-pool-on={t(($) => $.global.poolOn)}
+    data-pool-off={t(($) => $.global.poolOff)}
+>
+    <div class="head">
+        <h3 id="pport-title">pport</h3>
+        <span>LPT1</span>
+    </div>
+
+    <div class="dsub" role="group" aria-label={t(($) => $.global.pportConnector)}>
+        <svg viewBox="0 0 520 150" aria-hidden="true">
+            <rect
+                x="1"
+                y="1"
+                width="518"
+                height="148"
+                rx="20"
+                fill="rgb(233 239 230 / 0.04)"
+                stroke="rgb(233 239 230 / 0.16)"></rect>
+            <circle cx="34" cy="85" r="10" fill="#092a20" stroke="rgb(233 239 230 / 0.22)"></circle>
+            <circle cx="486" cy="85" r="10" fill="#092a20" stroke="rgb(233 239 230 / 0.22)"></circle>
+            <path
+                d="M78 44H442Q462 44 458 62L448 110Q444 126 428 126H92Q76 126 72 110L62 62Q58 44 78 44Z"
+                fill="#061d16"
+                stroke="rgb(233 239 230 / 0.3)"
+                stroke-width="1.5"></path>
+        </svg>
+        <div class="pin-row top">
+            {
+                topRow.map((n) =>
+                    isData(n) ? (
+                        <button
+                            class="pin"
+                            type="button"
+                            role="switch"
+                            aria-checked={n <= 3 ? "true" : "false"}
+                            data-pin={n}
+                            aria-label={pinLabel(n)}
+                        />
+                    ) : (
+                        <span class="pin" />
+                    ),
+                )
+            }
+        </div>
+        <div class="pin-row bottom">
+            {bottomRow.map(() => <span class="pin" />)}
+        </div>
+    </div>
+
+    <div class="lines">
+        <button class="line" type="button" role="switch" aria-checked="true" data-pin="2">
+            <span class="no">PIN 2</span>
+            <span>
+                <span class="name">{t(($) => $.global.lights)}</span>
+                <span class="state"><span data-pport-state="2">{t(($) => $.global.lightsOn)}</span></span>
+            </span>
+            <span class="switch" aria-hidden="true"></span>
+        </button>
+        <button class="line" type="button" role="switch" aria-checked="true" data-pin="3">
+            <span class="no">PIN 3</span>
+            <span>
+                <span class="name">{t(($) => $.global.pool)}</span>
+                <span class="state">
+                    <svg class="wave" viewBox="0 0 24 10" aria-hidden="true">
+                        <path
+                            d="M-16 5c3-4 5-4 8 0s5 4 8 0 5-4 8 0 5 4 8 0 5-4 8 0 5 4 8 0 5-4 8 0"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.6"
+                            stroke-linecap="round"></path>
+                    </svg>
+                    <span data-pport-state="3">{t(($) => $.global.poolOn)}</span>
+                </span>
+            </span>
+            <span class="switch" aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div class="console" role="log" aria-label={t(($) => $.global.pportLog)} data-pport-log></div>
+    <p class="note">{t(($) => $.global.pportNote)}</p>
+</section>
+
+<style>
+    .pport {
+        padding: clamp(1rem, 2.5vw, 1.4rem);
+        border: 1px solid var(--board-line);
+        border-radius: 1.25rem;
+        background: var(--board-deep);
+        color: var(--board-ink);
+    }
+
+    .head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        color: var(--board-ink-2);
+    }
+
+    .head h3 {
+        font: 500 0.95rem var(--mono);
+        letter-spacing: 0;
+        color: var(--board-ink);
+    }
+
+    .dsub {
+        position: relative;
+        container-type: inline-size;
+        aspect-ratio: 520 / 150;
+        margin-top: 0.9rem;
+    }
+
+    .dsub svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Rows are placed in percentages of the 520x150 drawing so they track the shell at any width. */
+    .pin-row {
+        position: absolute;
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        transform: translateY(-50%);
+    }
+
+    .pin-row.top {
+        left: 14.375%;
+        right: 14.375%;
+        top: 46.67%;
+    }
+
+    .pin-row.bottom {
+        left: 17.115%;
+        right: 17.115%;
+        top: 66.67%;
+    }
+
+    .pin {
+        position: relative;
+        display: grid;
+        place-items: center;
+        aspect-ratio: 1;
+        border-radius: 50%;
+    }
+
+    .pin::before {
+        content: "";
+        width: 60%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: #0d3a2c;
+        box-shadow: inset 0 0 0 1.5px rgb(233 239 230 / 0.2);
+        transition:
+            background-color 0.2s,
+            box-shadow 0.2s;
+    }
+
+    button.pin {
+        cursor: pointer;
+    }
+
+    button.pin::before {
+        box-shadow: inset 0 0 0 1.5px var(--board-copper);
+    }
+
+    button.pin:hover::before {
+        background: rgb(240 145 90 / 0.3);
+    }
+
+    button.pin[aria-checked="true"]::before {
+        background: var(--board-copper);
+        box-shadow:
+            0 0 0 3px rgb(240 145 90 / 0.22),
+            0 0 14px 1px rgb(240 145 90 / 0.7);
+    }
+
+    button.pin::after {
+        content: attr(data-pin);
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + 2.6cqw);
+        transform: translateX(-50%);
+        font-family: var(--mono);
+        font-size: clamp(0.56rem, 2.3cqw, 0.68rem);
+        line-height: 1;
+        color: var(--board-ink-2);
+    }
+
+    .lines {
+        margin-top: 0.9rem;
+        border-top: 1px solid var(--board-line);
+    }
+
+    .line {
+        display: grid;
+        grid-template-columns: 3.4rem minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.75rem;
+        width: 100%;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid var(--board-line);
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .no {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+        color: var(--board-ink-2);
+    }
+
+    .name {
+        display: block;
+        font-weight: 600;
+        line-height: 1.25;
+    }
+
+    .state {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--board-ink-2);
+    }
+
+    .wave {
+        width: 1.2rem;
+        height: 0.5rem;
+        overflow: hidden;
+        opacity: 0.4;
+    }
+
+    .line[aria-checked="true"] .wave {
+        color: var(--board-copper);
+        opacity: 1;
+    }
+
+    .switch {
+        position: relative;
+        width: 3rem;
+        height: 1.75rem;
+        border-radius: 999px;
+        background: rgb(233 239 230 / 0.16);
+        transition: background-color 0.25s;
+    }
+
+    .switch::after {
+        content: "";
+        position: absolute;
+        left: 3px;
+        top: 3px;
+        width: calc(1.75rem - 6px);
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: var(--board-ink);
+        transition:
+            transform 0.3s var(--ease),
+            background-color 0.25s;
+    }
+
+    .line[aria-checked="true"] .switch {
+        background: var(--board-copper);
+    }
+
+    .line[aria-checked="true"] .switch::after {
+        transform: translateX(1.25rem);
+        background: #1c0f07;
+    }
+
+    .console {
+        min-height: 5.25rem;
+        margin-top: 0.9rem;
+        padding: 0.75rem 0.9rem;
+        border-radius: 0.7rem;
+        background: #061d16;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        line-height: 1.55;
+    }
+
+    /* Lines are written by src/scripts/site.ts, so they carry no scope attribute. */
+    .console :global(p) {
+        opacity: 0.45;
+    }
+
+    .console :global(p:last-child) {
+        opacity: 1;
+    }
+
+    .console :global(p)::before {
+        content: "> ";
+        color: var(--board-copper);
+    }
+
+    .note {
+        margin-top: 0.9rem;
+        font-size: 0.82rem;
+        line-height: 1.5;
+        color: var(--board-ink-2);
+    }
+
+    .pport :focus-visible {
+        outline-color: var(--board-copper);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .line[aria-checked="true"] .wave path {
+            animation: pport-flow 1.1s linear infinite;
+        }
+    }
+
+    @keyframes pport-flow {
+        to {
+            transform: translateX(16px);
+        }
+    }
+</style>

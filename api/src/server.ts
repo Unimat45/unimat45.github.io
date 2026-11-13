@@ -1,5 +1,5 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
-import { serve } from "bun";
+import type { Serve } from "bun";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
 import { Hono } from "hono/tiny";
@@ -30,10 +30,11 @@ app.all("/*", (c) =>
         createContext,
     }),
 );
-serve({
+
+// Bun serves this default export itself. Left to itself it would pick development mode (and its
+// error page) from NODE_ENV at run time; tie it to the build instead, like the endpoint above.
+export default {
     fetch: app.fetch,
     port: env.PORT,
-});
-
-// eslint-disable-next-line no-console
-console.log(`Server listening on http://localhost:${env.PORT}`);
+    development: process.env.NODE_ENV !== "production",
+} satisfies Serve.Options<undefined>;

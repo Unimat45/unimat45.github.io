@@ -1,13 +1,21 @@
 ---
+import { ArrowLeft } from "lucide-react";
+
 import FancyLastWord from "../components/FancyLastWord.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout page="index" className="grid gap-8">
-    <h1 class="place-self-center text-6xl">
-        Page Non
-        <FancyLastWord> Trouvée </FancyLastWord>
+<Layout page="index" className="wrap grid content-center py-(--section)">
+    <p class="eyebrow">Erreur 404</p>
+    <h1 class="display mt-4 text-[clamp(2.6rem,8vw,6rem)]">
+        Page non
+        <FancyLastWord>trouvée</FancyLastWord>
     </h1>
-
-    <a href="/fr" class="block text-center text-xl">Retour à l'accueil</a>
+    <p class="mt-5 max-w-xl text-lg text-ink-2">Cette page n'existe pas, ou plus.</p>
+    <div class="actions">
+        <a href="/fr/" class="btn">
+            <ArrowLeft aria-hidden="true" />
+            <span>Retour à l'accueil</span>
+        </a>
+    </div>
 </Layout>

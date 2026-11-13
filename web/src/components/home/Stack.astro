@@ -1,0 +1,328 @@
+---
+import { ArrowRight, ArrowUpRight } from "lucide-react";
+
+import { layers, projects } from "../../assets/projects";
+import { initI18n, type Locale } from "../../lib/i18n";
+
+interface Props {
+    locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { t } = initI18n({ locale });
+
+/* Top of the stack first: the browser at 0, then one level deeper per project. */
+const stack = [...projects].sort((a, b) => b.depth - a.depth);
+const depthLabel = (depth: number) => (depth === 0 ? "0" : `−${Math.abs(depth)}`);
+---
+
+<section class="work wrap" id="stack" aria-labelledby="stack-title">
+    <header class="section-head" data-reveal>
+        <div>
+            <p class="eyebrow">{t(($) => $.index.stackEyebrow)}</p>
+            <h2 id="stack-title">{t(($) => $.index.stackTitle)}</h2>
+            <p class="sub">{t(($) => $.index.stackText)}</p>
+        </div>
+        <a class="text-link" href={`/${locale}/projects`}>
+            <span>{t(($) => $.index.stackAll)}</span>
+            <ArrowRight aria-hidden="true" />
+        </a>
+    </header>
+
+    <ol class="strata">
+        {
+            stack.map((project) => (
+                <li class="stratum" data-reveal>
+                    <span class="seg" aria-hidden="true">
+                        <i />
+                    </span>
+                    <span class="via" aria-hidden="true" />
+                    <div class="depth">
+                        <span class="level">{depthLabel(project.depth)}</span>
+                        <span class="layer">{layers[project.layer][locale]}</span>
+                    </div>
+                    <div>
+                        <h3>
+                            <a href={`/${locale}/projects/${project.slug}`}>
+                                {project.title}
+                                <ArrowRight aria-hidden="true" />
+                            </a>
+                        </h3>
+                        <p class="summary">{locale === "fr" ? project.summary_fr : project.summary_en}</p>
+                        <ul class="tags">
+                            {project.tags.map((tag) => (
+                                <li>{tag}</li>
+                            ))}
+                        </ul>
+                        <p class="links">
+                            {project.has_demo && (
+                                <a href={project.link_demo} target="_blank" rel="noopener noreferrer">
+                                    <span>{t(($) => $.global.demo)}</span>
+                                    <ArrowUpRight aria-hidden="true" />
+                                </a>
+                            )}
+                            {project.has_code && (
+                                <a href={project.link_code} target="_blank" rel="noopener noreferrer">
+                                    <span>{t(($) => $.global.code)}</span>
+                                    <ArrowUpRight aria-hidden="true" />
+                                </a>
+                            )}
+                        </p>
+                    </div>
+                    <div class="shot">
+                        <img
+                            src={`/images/projets/${project.slug}/thumb.webp`}
+                            width="720"
+                            height="316"
+                            alt=""
+                            loading="lazy"
+                            decoding="async"
+                        />
+                    </div>
+                </li>
+            ))
+        }
+    </ol>
+</section>
+
+<style>
+    .work {
+        padding-bottom: var(--run);
+    }
+
+    .section-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+        justify-content: space-between;
+        gap: 1.5rem 3rem;
+        margin-bottom: clamp(2rem, 4vw, 3.25rem);
+    }
+
+    .section-head h2 {
+        margin-top: 0.9rem;
+        font-size: clamp(2.1rem, 5vw, 3.75rem);
+        font-weight: 800;
+        font-stretch: 88%;
+        line-height: 1;
+        letter-spacing: -0.02em;
+    }
+
+    .sub {
+        margin-top: 1rem;
+        max-width: 36rem;
+        color: var(--ink-2);
+    }
+
+    .strata {
+        --via: 2.9rem; /* distance from a row's top edge to the centre of its via */
+    }
+
+    .stratum {
+        position: relative;
+        display: grid;
+        grid-template-columns: 10.5rem minmax(0, 1fr) minmax(0, 21rem);
+        column-gap: clamp(1.25rem, 3vw, 3rem);
+        align-items: start;
+        padding-block: 2.25rem;
+    }
+
+    .stratum::before {
+        content: "";
+        position: absolute;
+        left: 2.6rem;
+        right: 0;
+        top: 0;
+        height: 1px;
+        background: var(--line);
+    }
+
+    /* The last segment runs on past the stack, into the board below. */
+    .stratum:last-child .seg {
+        height: calc(100% - var(--via) + var(--run));
+    }
+
+    .depth {
+        padding-left: 2.6rem;
+    }
+
+    .level {
+        display: block;
+        font-family: var(--mono);
+        font-size: 1.3rem;
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: -0.02em;
+    }
+
+    .layer {
+        display: block;
+        margin-top: 0.6rem;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+    }
+
+    h3 {
+        font-size: clamp(1.65rem, 2.8vw, 2.3rem);
+        font-weight: 700;
+        font-stretch: 90%;
+        line-height: 1.05;
+        letter-spacing: -0.015em;
+    }
+
+    h3 a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: color 0.25s;
+    }
+
+    /* The whole row opens the project page. */
+    h3 a::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+    }
+
+    h3 :global(svg) {
+        width: 0.7em;
+        height: 0.7em;
+        color: var(--accent-strong);
+        opacity: 0;
+        transform: translateX(-0.4rem);
+        transition:
+            opacity 0.25s,
+            transform 0.35s var(--ease);
+    }
+
+    .stratum:hover h3 a,
+    h3 a:focus-visible {
+        color: var(--accent);
+    }
+
+    .stratum:hover h3 :global(svg),
+    h3 a:focus-visible :global(svg) {
+        opacity: 1;
+        transform: none;
+    }
+
+    .summary {
+        margin-top: 0.7rem;
+        max-width: 33rem;
+        color: var(--ink-2);
+    }
+
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-top: 1.1rem;
+    }
+
+    .tags li {
+        padding: 0.2rem 0.65rem;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--ink-2);
+    }
+
+    .links {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem 1.25rem;
+        width: fit-content;
+        margin-top: 1.1rem;
+    }
+
+    .links a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding-block: 0.25rem;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-decoration: underline;
+        text-decoration-color: var(--line);
+        text-decoration-thickness: 1.5px;
+        text-underline-offset: 0.3em;
+        transition:
+            color 0.25s,
+            text-decoration-color 0.25s;
+    }
+
+    .links a:hover {
+        color: var(--accent);
+        text-decoration-color: var(--accent-strong);
+    }
+
+    .links :global(svg) {
+        width: 0.8rem;
+        height: 0.8rem;
+    }
+
+    .shot {
+        aspect-ratio: 1024 / 450;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 0.8rem;
+        background: var(--surface);
+        transition:
+            transform 0.45s var(--ease),
+            box-shadow 0.45s var(--ease);
+    }
+
+    .shot img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .stratum:hover .shot {
+        transform: translateY(-4px);
+        box-shadow: 0 18px 40px -22px rgb(15 31 25 / 0.5);
+    }
+
+    @media (max-width: 64rem) {
+        .stratum {
+            grid-template-columns: 8.5rem minmax(0, 1fr) minmax(0, 16rem);
+        }
+    }
+
+    @media (max-width: 48rem) {
+        .stratum {
+            grid-template-columns: minmax(0, 1fr);
+            row-gap: 1.1rem;
+            padding-left: 2.2rem;
+        }
+
+        .stratum::before {
+            left: 2.2rem;
+        }
+
+        .depth {
+            display: flex;
+            align-items: baseline;
+            gap: 0.7rem;
+            padding-left: 0;
+        }
+
+        .layer {
+            margin-top: 0;
+        }
+
+        .shot {
+            max-width: 26rem;
+        }
+    }
+</style>

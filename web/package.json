@@ -7,6 +7,7 @@
         "build": "bunx --bun astro build",
         "prebuild": "bun run sitemap.ts",
         "preview": "bunx --bun astro preview",
+        "check": "bunx --bun astro sync && bun check",
         "astro": "astro"
     },
     "dependencies": {

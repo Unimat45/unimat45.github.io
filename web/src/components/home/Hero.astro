@@ -1,0 +1,250 @@
+---
+import { Image } from "astro:assets";
+import { ArrowDown, ArrowRight } from "lucide-react";
+
+import pixels from "../../assets/pixels.svg?raw";
+import Portrait from "../../assets/portrait.webp";
+import { initI18n, type Locale } from "../../lib/i18n";
+
+interface Props {
+    locale: Locale;
+}
+
+const { locale } = Astro.props;
+const { t } = initI18n({ locale });
+
+/* Years of experience, counted from January 2022; site.ts refreshes it in the browser between builds. */
+const careerStart = "2022-01-01";
+const years = Math.floor((Date.now() - new Date(careerStart).getTime()) / 31536000000);
+---
+
+<section class="hero wrap">
+    <div>
+        <p class="eyebrow" data-reveal>{t(($) => $.index.eyebrow)}</p>
+        <h1 data-reveal style="--d: 0.06s">
+            <span>{t(($) => $.index.headline)}</span>
+            <span>
+                {t(($) => $.index.headlineTo)}{" "}<span class="pins-word">{t(($) => $.index.headlinePins)}</span><span
+                    class="dot">.</span
+                >
+            </span>
+        </h1>
+        <p class="lede" data-reveal style="--d: 0.14s">{t(($) => $.index.lede)}</p>
+        <div class="actions" data-reveal style="--d: 0.2s">
+            <a class="btn" href={`/${locale}/contact`}>
+                <span>{t(($) => $.index.cta)}</span>
+                <ArrowRight aria-hidden="true" />
+            </a>
+            <a class="text-link" href="#stack">
+                <span>{t(($) => $.index.down)}</span>
+                <ArrowDown aria-hidden="true" />
+            </a>
+        </div>
+        <dl class="facts" data-reveal style="--d: 0.28s">
+            <div>
+                <dt>{t(($) => $.index.factYears)}</dt>
+                <dd data-years-since={careerStart}>{years}+</dd>
+            </div>
+            <div>
+                <dt>{t(($) => $.index.factProjects)}</dt>
+                <dd>50+</dd>
+            </div>
+            <div>
+                <dt>{t(($) => $.index.factClients)}</dt>
+                <dd>15+</dd>
+            </div>
+        </dl>
+    </div>
+
+    <figure class="portrait" data-reveal style="--d: 0.18s">
+        <div class="card" set:html={pixels} />
+        <div class="cut">
+            <Image
+                src={Portrait}
+                alt={t(($) => $.index.imageAlt)}
+                widths={[360, 560, 720, 1080]}
+                sizes="(max-width: 56rem) 21rem, 23rem"
+                loading="eager"
+                fetchpriority="high"
+            />
+        </div>
+        <div class="legs" aria-hidden="true">
+            {Array.from({ length: 13 }, (_, i) => <i style={`--i: ${i}`} />)}
+        </div>
+    </figure>
+</section>
+
+<style>
+    .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.8fr);
+        gap: clamp(2rem, 5vw, 5rem);
+        align-items: end;
+        padding-block: clamp(2.5rem, 6vw, 5rem) var(--section);
+    }
+
+    h1 {
+        margin-top: 1.25rem;
+        font-size: clamp(3rem, 8.4vw, 7rem);
+        font-weight: 800;
+        font-stretch: 87%;
+        line-height: 0.92;
+        letter-spacing: -0.026em;
+    }
+
+    h1 > span {
+        display: block;
+        white-space: nowrap;
+    }
+
+    .pins-word {
+        font-family: var(--mono);
+        font-size: 0.82em;
+        font-weight: 600;
+        letter-spacing: -0.07em;
+        color: var(--accent-strong);
+    }
+
+    .dot {
+        color: var(--accent-strong);
+    }
+
+    .lede {
+        margin-top: clamp(1.5rem, 3vw, 2.25rem);
+        max-width: 34rem;
+        font-size: clamp(1.0625rem, 1.5vw, 1.2rem);
+        line-height: 1.55;
+        color: var(--ink-2);
+    }
+
+    .facts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem clamp(1.5rem, 4vw, 3.25rem);
+        margin-top: clamp(2.5rem, 5vw, 3.75rem);
+        padding-top: 1.4rem;
+        border-top: 1px solid var(--line);
+    }
+
+    .facts div {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+
+    .facts dd {
+        font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+        font-weight: 700;
+        font-stretch: 88%;
+        line-height: 1;
+        letter-spacing: -0.015em;
+    }
+
+    .facts dt {
+        margin-top: 0.5rem;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+    }
+
+    /* Portrait: pixels at the top of the card, pins along its bottom edge. */
+    .portrait {
+        position: relative;
+        justify-self: end;
+        width: min(100%, 25rem);
+        aspect-ratio: 1080 / 1561;
+        margin-bottom: 1.2rem;
+    }
+
+    .card {
+        position: absolute;
+        inset: 17% 0 0;
+        z-index: 1;
+        overflow: hidden;
+        border-radius: 1.6rem;
+        background: var(--board);
+    }
+
+    .card :global(svg) {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .cut {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        overflow: hidden;
+        border-radius: 0 0 1.6rem 1.6rem;
+    }
+
+    .cut :global(img) {
+        position: absolute;
+        left: 4%;
+        bottom: 0;
+        width: 92%;
+        height: auto;
+    }
+
+    .legs {
+        position: absolute;
+        left: 13%;
+        right: 13%;
+        top: 100%;
+        display: grid;
+        grid-template-columns: repeat(13, 1fr);
+        height: 1.2rem;
+    }
+
+    .legs i {
+        justify-self: center;
+        width: 46%;
+        border-radius: 0 0 3px 3px;
+        background: var(--accent-strong);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        :global(.js) .legs i {
+            transform: translateY(-100%);
+            transition: transform 0.5s var(--ease);
+            transition-delay: calc(0.55s + var(--i) * 35ms);
+        }
+
+        :global(.js) .portrait.in .legs i {
+            transform: none;
+        }
+    }
+
+    @media (max-width: 56rem) {
+        .hero {
+            grid-template-columns: minmax(0, 1fr);
+            align-items: start;
+        }
+
+        h1 {
+            font-size: clamp(2.9rem, 15.5vw, 6.5rem);
+        }
+
+        .portrait {
+            justify-self: center;
+            width: min(100%, 22rem);
+            margin-top: 1rem;
+        }
+    }
+
+    @media (max-width: 30rem) {
+        .facts {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .facts dt {
+            font-size: 0.66rem;
+            letter-spacing: 0.04em;
+        }
+    }
+</style>

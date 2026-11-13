@@ -1,0 +1,66 @@
+name: Publish the API image
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - "api/**"
+            - ".github/workflows/api-image.yml"
+    # Build without pushing, so a broken Dockerfile shows up before the merge.
+    pull_request:
+        branches:
+            - main
+        paths:
+            - "api/**"
+            - ".github/workflows/api-image.yml"
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    packages: write
+
+concurrency:
+    group: api-image-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    # GHCR image names must be lowercase.
+    IMAGE: ghcr.io/unimat45/portfolio-api
+
+jobs:
+    image:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: docker/setup-buildx-action@v4
+
+            - name: Log in to GHCR
+              if: github.event_name != 'pull_request'
+              uses: docker/login-action@v4
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            # latest + sha-<short sha> on main; the labels link the package back to this repo.
+            - id: meta
+              uses: docker/metadata-action@v6
+              with:
+                  images: ${{ env.IMAGE }}
+                  tags: |
+                      type=raw,value=latest,enable={{is_default_branch}}
+                      type=sha
+                      type=ref,event=pr
+
+            - uses: docker/build-push-action@v7
+              with:
+                  context: ./api
+                  file: ./api/Dockerfile
+                  push: ${{ github.event_name != 'pull_request' }}
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max

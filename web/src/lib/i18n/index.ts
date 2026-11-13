@@ -6,6 +6,14 @@ import { resources } from "./resources.ts";
 
 export type Pages = keyof (typeof resources)["fr"]["translation"];
 
+export const locales = ["fr", "en"] as const;
+export type Locale = (typeof locales)[number];
+
+/** Narrows a route param to a supported locale, falling back to French. */
+export function toLocale(value?: string): Locale {
+    return value === "en" ? "en" : "fr";
+}
+
 i18next.use(initReactI18next).init({
     resources,
 });

@@ -11,12 +11,12 @@ interface Props {
 export const Chip: React.FC<Props> = ({ label, onSelected, isSelected }) => {
     return (
         <button
+            type="button"
             onClick={onSelected}
+            aria-pressed={isSelected}
             className={cn(
-                "cursor-pointer rounded-full px-4 py-2 text-sm font-medium transition-all duration-300",
-                isSelected
-                    ? "bg-linear-to-r from-cyan-500 to-emerald-500 text-white shadow-lg shadow-cyan-500/50"
-                    : "border border-gray-700 bg-gray-800/50 text-gray-300 hover:border-cyan-500/50",
+                "cursor-pointer rounded-full border px-4 py-1.5 font-mono text-xs font-medium transition-colors duration-300",
+                isSelected ? "border-ink bg-ink text-bg" : "border-line text-ink-2 hover:border-ink-3 hover:text-ink",
             )}
         >
             {label}

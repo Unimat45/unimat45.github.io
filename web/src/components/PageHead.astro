@@ -1,0 +1,20 @@
+---
+import FancyLastWord from "./FancyLastWord.astro";
+
+interface Props {
+    eyebrow: string;
+    title: string;
+    description?: string;
+}
+
+const { eyebrow, title, description } = Astro.props;
+---
+
+<header class="mb-10 md:mb-14" data-reveal>
+    <p class="eyebrow">{eyebrow}</p>
+    <h1 class="display mt-4 text-[clamp(2.6rem,7vw,5rem)]">
+        {title.removeLastWord()}
+        <FancyLastWord>{title.getLastWord()}</FancyLastWord>
+    </h1>
+    {description && <p class="mt-5 max-w-xl text-lg text-ink-2">{description}</p>}
+</header>
