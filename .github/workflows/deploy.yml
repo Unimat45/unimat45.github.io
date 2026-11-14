@@ -13,8 +13,15 @@ permissions:
 jobs:
     build:
         runs-on: ubuntu-latest
+        env:
+            # Repository variable (Settings > Secrets and variables > Actions > Variables): the contact API's URL.
+            PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
 
         steps:
+            # Without it, the site would be built against the local API (the default in astro.config.mjs).
+            - name: Check PUBLIC_API_URL is set
+              run: test -n "$PUBLIC_API_URL" || { echo "::error::Set the PUBLIC_API_URL repository variable"; exit 1; }
+
             - uses: actions/checkout@v4
 
             - uses: oven-sh/setup-bun@v2
