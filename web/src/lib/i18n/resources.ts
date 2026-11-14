@@ -65,7 +65,7 @@ const fr = defineLocale({
             headline: "Des pixels",
             headlineTo: "aux",
             headlinePins: "broches",
-            lede: "Je conçois des applications web évolutives. Et quand la curiosité l'emporte, je descends plus bas dans la pile : applications de bureau en Rust, C++ compilé en WebAssembly, sockets TCP, jusqu'au port parallèle qui éteint le moteur de ma piscine la nuit.",
+            lede: "Je conçois des applications web évolutives. Et quand la curiosité l'emporte, je descends plus bas dans la pile : démons en Rust, C++ compilé en WebAssembly, sockets TCP, jusqu'au port parallèle qui éteint le moteur de ma piscine la nuit.",
             cta: "Parlons de votre projet",
             down: "Descendre dans la pile",
 
@@ -94,6 +94,10 @@ const fr = defineLocale({
 
             link_demo: "Voir la démo",
             link_code: "Voir le code source",
+
+            enlarge: "Capture agrandie",
+            enlargeShot: "Agrandir : {{caption}}",
+            close: "Fermer",
         },
         contact: {
             title: "Contacter",
@@ -167,7 +171,7 @@ const en = defineLocale({
             headline: "From pixels",
             headlineTo: "to",
             headlinePins: "pins",
-            lede: "I build scalable web applications. And when curiosity wins, I go further down the stack: desktop apps in Rust, C++ compiled to WebAssembly, raw TCP sockets, all the way to the parallel port that switches my pool pump off at night.",
+            lede: "I build scalable web applications. And when curiosity wins, I go further down the stack: daemons in Rust, C++ compiled to WebAssembly, raw TCP sockets, all the way to the parallel port that switches my pool pump off at night.",
             cta: "Let's talk about your project",
             down: "Go down the stack",
 
@@ -196,6 +200,10 @@ const en = defineLocale({
 
             link_demo: "View Live Demo",
             link_code: "View Source Code",
+
+            enlarge: "Enlarged screenshot",
+            enlargeShot: "Enlarge: {{caption}}",
+            close: "Close",
         },
         contact: {
             title: "Contact",
