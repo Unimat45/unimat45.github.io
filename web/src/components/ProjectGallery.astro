@@ -1,0 +1,243 @@
+---
+import { getImage, Image } from "astro:assets";
+import { X } from "lucide-react";
+
+import type { Shot } from "../assets/media";
+import { initI18n, type Locale } from "../lib/i18n";
+
+interface Props {
+    shots: Shot[];
+    locale: Locale;
+}
+
+const { shots, locale } = Astro.props;
+const { t } = initI18n({ locale });
+
+/*
+ * Layout, in the order the shots are listed: the first screen is the lead (as wide as it was captured, up to the
+ * page width), consecutive phone screens sit side by side, a panoramic screen (2:1 or wider) gets a row of its own
+ * so it doesn't shrink to a strip, and consecutive other screens share a two-column grid.
+ */
+type BlockType = "lead" | "wide" | "grid" | "phones";
+type Block = { type: BlockType; shots: Shot[] };
+const blocks: Block[] = [];
+for (const shot of shots) {
+    const { width, height } = shot.image;
+    const type: BlockType =
+        shot.kind === "phone"
+            ? "phones"
+            : !blocks.some((b) => b.type === "lead")
+              ? "lead"
+              : width / height >= 2
+                ? "wide"
+                : "grid";
+    const last = blocks.at(-1);
+    if (last && last.type === type && (type === "grid" || type === "phones")) last.shots.push(shot);
+    else blocks.push({ type, shots: [shot] });
+}
+
+const fullRow = "(min-width: 76rem) 74rem, calc(100vw - 2.5rem)";
+const sizesFor: Record<BlockType, string> = {
+    lead: fullRow,
+    wide: fullRow,
+    grid: "(min-width: 76rem) 36rem, (min-width: 48rem) 50vw, calc(100vw - 2.5rem)",
+    phones: "(min-width: 30rem) 15rem, 45vw",
+};
+const fullWidths = [640, 960, 1280, 1920, 2560];
+const widthsFor: Record<BlockType, number[]> = {
+    lead: fullWidths,
+    wide: fullWidths,
+    grid: [480, 720, 1080, 1440],
+    phones: [240, 360, 480, 720],
+};
+
+const items = await Promise.all(
+    blocks.map(async (block) => ({
+        type: block.type,
+        shots: await Promise.all(
+            block.shots.map(async (shot) => {
+                const { image } = shot;
+                const full = await getImage({ src: image, width: Math.min(image.width, 2560), format: "webp" });
+                return {
+                    image,
+                    alt: shot.caption[locale],
+                    full: full.src,
+                    /* Never show a capture larger than it was taken (a 2x capture counts half). */
+                    maxWidth: Math.round(image.width / (shot.density ?? 1)),
+                    widths: widthsFor[block.type].filter((w) => w <= image.width),
+                };
+            }),
+        ),
+    })),
+);
+---
+
+<div class="gallery" data-gallery>
+    {
+        items.map((block) => (
+            <div class={`block ${block.type}`}>
+                {block.shots.map((shot) => (
+                    <figure style={`--max: ${shot.maxWidth}px`}>
+                        <button
+                            type="button"
+                            class="zoom"
+                            data-full={shot.full}
+                            data-alt={shot.alt}
+                            aria-label={t(($) => $.projects.enlargeShot, { caption: shot.alt })}
+                        >
+                            <Image
+                                src={shot.image}
+                                alt={shot.alt}
+                                widths={shot.widths.length ? shot.widths : [shot.image.width]}
+                                sizes={sizesFor[block.type]}
+                                loading={block.type === "lead" ? "eager" : "lazy"}
+                            />
+                        </button>
+                        <figcaption>{shot.alt}</figcaption>
+                    </figure>
+                ))}
+            </div>
+        ))
+    }
+
+    <dialog class="lightbox" aria-label={t(($) => $.projects.enlarge)}>
+        <form method="dialog">
+            <button class="close" aria-label={t(($) => $.projects.close)}><X aria-hidden="true" /></button>
+        </form>
+        <img alt="" />
+    </dialog>
+</div>
+
+<script>
+    import "../scripts/gallery.ts";
+</script>
+
+<style>
+    .gallery {
+        display: grid;
+        gap: clamp(1.75rem, 4vw, 3rem);
+    }
+
+    .block {
+        display: grid;
+        gap: clamp(1.25rem, 3vw, 2rem);
+    }
+
+    /* Two columns at most, so the text in a capture stays readable. */
+    .grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    @media (min-width: 48rem) {
+        .grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    /* An odd one out at the end of the grid gets the full row. */
+    .grid figure:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+    }
+
+    .phones {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .phones figure {
+        width: min(15rem, calc(50% - 0.75rem));
+    }
+
+    figure {
+        justify-self: center;
+        width: 100%;
+        max-width: var(--max);
+    }
+
+    .zoom {
+        display: block;
+        width: 100%;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 1rem;
+        background: var(--surface);
+        cursor: zoom-in;
+        transition:
+            transform 0.35s var(--ease),
+            box-shadow 0.35s var(--ease);
+    }
+
+    .phones .zoom {
+        border-radius: 1.5rem;
+    }
+
+    .zoom:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 40px -24px rgb(15 31 25 / 0.55);
+    }
+
+    .zoom :global(img) {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    figcaption {
+        margin-top: 0.75rem;
+        max-width: 42rem;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: var(--ink-2);
+    }
+
+    .phones figcaption {
+        text-align: center;
+    }
+
+    .lightbox {
+        max-width: none;
+        max-height: none;
+        width: 100vw;
+        height: 100dvh;
+        margin: 0;
+        padding: clamp(1rem, 3vw, 2.5rem);
+        border: 0;
+        background: transparent;
+        cursor: zoom-out;
+    }
+
+    .lightbox[open] {
+        display: grid;
+        place-items: center;
+    }
+
+    .lightbox::backdrop {
+        background: rgb(9 18 15 / 0.88);
+    }
+
+    .lightbox img {
+        max-width: 100%;
+        max-height: calc(100dvh - 2 * clamp(1rem, 3vw, 2.5rem));
+        border-radius: 0.75rem;
+        object-fit: contain;
+    }
+
+    .close {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        display: grid;
+        place-items: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: 50%;
+        background: rgb(233 239 230 / 0.12);
+        color: #e9efe6;
+    }
+
+    .close :global(svg) {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+</style>

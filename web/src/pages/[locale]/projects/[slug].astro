@@ -2,8 +2,9 @@
 import type { GetStaticPaths } from "astro";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 
+import { mediaFor } from "../../../assets/media";
 import { layers, projects } from "../../../assets/projects";
-import { ProjectCarousel } from "../../../components/ProjectCarousel";
+import ProjectGallery from "../../../components/ProjectGallery.astro";
 import Layout from "../../../layouts/Layout.astro";
 import { initI18n, toLocale } from "../../../lib/i18n";
 
@@ -55,8 +56,8 @@ const linkCard =
         </p>
     </header>
 
-    <div class="mt-10 h-72 overflow-hidden rounded-2xl border border-line bg-surface md:h-96">
-        <ProjectCarousel slug={project.slug} nbr_images={project.nbr_images} client:load />
+    <div class="mt-10">
+        <ProjectGallery shots={mediaFor(project.slug).shots} locale={locale} />
     </div>
 
     <div class="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">

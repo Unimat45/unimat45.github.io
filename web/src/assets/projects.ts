@@ -17,11 +17,12 @@ export type Tag = (typeof tags)[number];
 
 /** Where each project sits in the stack, from the browser (0) down to the hardware. */
 export const layers = {
-    browser: { fr: "Navigateur", en: "Browser" },
-    desktop: { fr: "Bureau", en: "Desktop" },
     wasm: { fr: "WebAssembly", en: "WebAssembly" },
-    system: { fr: "Système", en: "System" },
+    backend: { fr: "Back-end", en: "Backend" },
+    plugin: { fr: "Extension", en: "Plugin" },
     network: { fr: "Réseau", en: "Network" },
+    daemon: { fr: "Service", en: "Daemon" },
+    system: { fr: "Système", en: "System" },
     hardware: { fr: "Matériel", en: "Hardware" },
 } as const;
 export type Layer = keyof typeof layers;
@@ -37,7 +38,6 @@ export type Project = {
     /** 0 for the browser, negative going down the stack; the homepage lists projects by depth. */
     depth: number;
     layer: Layer;
-    nbr_images: number;
     tags: Tag[];
 } & (
     | {
@@ -60,28 +60,63 @@ export type Project = {
 
 export const projects: Project[] = [
     {
-        title: "Banana Streaming",
-        slug: "banana_streaming",
-        depth: 0,
-        layer: "browser",
+        title: "mcsd",
+        slug: "mcsd",
+        depth: -4,
+        layer: "daemon",
         summary_fr:
-            "Un site de streaming de films et de séries, avec recherche par genre, reprise de lecture et enchaînement automatique des épisodes.",
+            "Un démon à la pm2 pour les serveurs Minecraft, en Rust : il télécharge le jar et le bon Java, surveille chaque serveur et diffuse sa console dans un tableau de bord web.",
         summary_en:
-            "A streaming site for movies and series, with search by genre, resume where you left off and automatic next-episode prompts.",
+            "A pm2-style daemon for Minecraft servers, in Rust: it downloads the jar and the right Java, supervises each server and streams its console to a web dashboard.",
         description_fr:
-            "Écrit en React, ce site web permet d'écouter une variété de films et séries en quelques cliques, que se soit sur ordinateur ou mobile. À la première visite, on peut y voir tous les films et séries disponibles, classés par genre (Ex: Action, Comédie, etc) chacun dans leur caroussel respectif. Une page de recherche est aussi disponible pour trouver facilement une vidéo soit par nom ou par genre. L'application intègre aussi quelques fonctionnalitées de comfort d'utilisation, par exemple: Une section pour continuer l'écoute d'un film qui n'a pas été terminé, un bouton qui s'affiche vers la fin d'un épisode pour écouter le prochain épisode.",
+            "Un démon à la pm2, pensé pour les serveurs Minecraft. Une seule commande crée un serveur Paper, Vanilla ou Fabric : mcsd télécharge le jar et vérifie sa somme de contrôle, trouve la version de Java qui convient à la version de Minecraft (ou télécharge Eclipse Temurin) et accepte l’EULA. Il surveille ensuite chaque serveur : état, joueurs, CPU et mémoire, redémarrage après un plantage avec un délai croissant, et un arrêt propre qui laisse les mondes se sauvegarder. Tout se pilote en ligne de commande ou depuis un tableau de bord SvelteKit intégré au binaire, qui diffuse la console par WebSocket. Le démon est écrit en Rust avec tokio et axum, et se distribue en un seul binaire pour Windows, Linux et macOS, qui s’installe comme service système.",
         description_en:
-            "Written in React, this website allows you to listen to a variety of films and series in just a few clicks, whether on computer or mobile. On the first visit, you can see all the films and series available, classified by genre (Ex: Action, Comedy, etc.) each in their respective carousel. A search page is also available to easily find a video either by name or genre. The application also includes some user-friendly features, for example: A section to continue listening to a film that has not been finished, a button that appears towards the end of an episode to listen the next episode.",
-        link_demo: "https://www.bananastreaming.ca",
-        nbr_images: 4,
-        tags: ["TypeScript", "React"],
-        has_code: false,
-        has_demo: true,
+            "A pm2-style daemon, built for Minecraft servers. One command creates a Paper, Vanilla or Fabric server: mcsd downloads the jar and verifies its checksum, finds the Java version that suits the Minecraft version (or downloads Eclipse Temurin), and accepts the EULA. It then supervises each server: state, players, CPU and memory, restarts after a crash with a growing delay, and a clean stop that lets the worlds save. Everything is driven from the command line or from a SvelteKit dashboard embedded in the binary, which streams the console over WebSocket. The daemon is written in Rust with tokio and axum, and ships as a single binary for Windows, Linux and macOS that installs as a system service.",
+        link_code: "https://github.com/Unimat45/mcsd",
+        tags: ["Rust", "Svelte", "TypeScript", "WebSocket"],
+        has_code: true,
+        has_demo: false,
+    },
+    {
+        title: "CoordonatesPlugin",
+        slug: "coordonates_plugin",
+        depth: -2,
+        layer: "plugin",
+        summary_fr:
+            "Un plugin Spigot et Paper pour partager sa position et sauvegarder des coordonnées nommées, de Minecraft 1.8 à 26.x.",
+        summary_en:
+            "A Spigot and Paper plugin to share your position and save named coordinates, from Minecraft 1.8 to 26.x.",
+        description_fr:
+            "Un plugin pour serveurs Spigot et Paper qui aide à se souvenir des endroits importants. /coord annonce sa position à tout le serveur, /save-coord sauvegarde sa position et son monde sous un nom, /show-coord affiche ses endroits sauvegardés (à soi seulement) et /delete-coord en retire un. Réutiliser un nom demande d’abord une confirmation. Chaque commande a sa propre permission, et les coordonnées sont gardées dans un fichier YAML écrit après chaque changement. Le même jar fonctionne sur toutes les versions, de 1.8 à 26.x : la compilation vérifie le plugin contre chaque API Spigot prise en charge, et les tests s’exécutent contre la plus ancienne et la plus récente.",
+        description_en:
+            "A plugin for Spigot and Paper servers that helps you remember the places that matter. /coord broadcasts your position to the whole server, /save-coord saves your position and world under a name, /show-coord lists your saved spots (to you only) and /delete-coord removes one. Reusing a name asks for confirmation first. Each command has its own permission, and the coordinates are kept in a YAML file written after every change. The same jar runs on every version from 1.8 to 26.x: the build checks the plugin against each supported Spigot API, and the tests run against both the oldest and the newest.",
+        link_code: "https://github.com/Unimat45/CoordonatesPlugin",
+        tags: ["Java"],
+        has_code: true,
+        has_demo: false,
+    },
+    {
+        title: "RCON",
+        slug: "rcon",
+        depth: -3,
+        layer: "network",
+        summary_fr:
+            "Un client RCON pour Minecraft écrit en C, en ligne de commande ou avec une interface Qt, qui parle le protocole directement sur TCP/IP.",
+        summary_en:
+            "A Minecraft RCON client written in C, on the command line or with a Qt interface, speaking the protocol straight over TCP/IP.",
+        description_fr:
+            "Cette application a un seul but précis : effectuer la gestion d’un serveur minecraft à distance au travers des commandes déjà intégrées du serveur. Bien que ce programme semble très simpliste, le format utilisé pour transmettre les messages au serveur rend le processus plus compliqué. Ce programme s’occupe de lire la commande entrée par l’utilisateur, de les convertir au bon format et de communiquer avec le serveur au travers d’une connexion TCP/IP. Pareillement, à la réception d’un message du serveur, le programme déchiffre les octets et affiche la chaine de caractères dans la console. Très pratique pour gérer plusieurs serveurs. Le client existe en deux versions : un outil en ligne de commande et une interface graphique Qt.",
+        description_en:
+            "This application has one specific purpose: to manage a Minecraft server remotely using the server's already integrated commands. Although this program seems very simplistic, the format used to transmit messages to the server makes the process more complicated. This program takes care of reading the command entered by the user, converting them to the correct format and communicating with the server through a TCP/IP connection. Similarly, when receiving a message from the server, the program decrypts the bytes and displays the character string in the console. Very practical for managing multiple servers. The client comes in two versions: a command-line tool and a Qt graphical interface.",
+        link_code: "https://github.com/Unimat45/Rcon.git",
+        tags: ["C/C++"],
+        has_code: true,
+        has_demo: false,
     },
     {
         title: "pport",
         slug: "pport",
-        depth: -5,
+        depth: -6,
         layer: "hardware",
         summary_fr:
             "Un serveur en C qui pilote les lignes de données du port parallèle par WebSocket. Chez moi, il éteint le moteur de la piscine la nuit.",
@@ -92,34 +127,50 @@ export const projects: Project[] = [
         description_en:
             "Although not visually impressive, this application allows you to manage the data line of a computer's parallel port using a simple command. This comes in two parts: the server, the one that receives and processes the sent command, and the client, which, in this case, is a web application hosted only on a local network. Although the server is written in C, the client can be rebuilt in any programming language, since the connection to the server is made through WebSockets. The commands were created to be intuitive and always follow this basis: STATUS LINE INSTRUCTION. For example, to turn on the third line, we would use “SET PIN 3 HIGH”. The use of this program can vary greatly from person to person, I personally use it to turn off my pool installer at night.",
         link_code: "https://github.com/Unimat45/pport.git",
-        nbr_images: 1,
         tags: ["C/C++", "TypeScript", "WebSocket"],
         has_code: true,
         has_demo: false,
     },
     {
-        title: "Password Patch",
-        slug: "password_patch",
+        title: "OrangeAuth",
+        slug: "orange_auth",
         depth: -1,
-        layer: "desktop",
+        layer: "backend",
         summary_fr:
-            "Un gestionnaire de mots de passe de bureau, bilingue, avec export et import JSON. Interface en React, cœur en Rust avec Tauri.",
+            "Un middleware d’authentification pour Node.js et TypeScript, indépendant du framework, bâti sur des fournisseurs et des stratégies de session interchangeables. Publié sur npm.",
         summary_en:
-            "A bilingual desktop password manager with JSON export and import. React interface, Rust core, built with Tauri.",
+            "A framework-agnostic authentication middleware for Node.js and TypeScript, built on swappable providers and session strategies. Published on npm.",
         description_fr:
-            'Une application de bureau qui s’occupe de sauvegarder vos mots de passe de manière sécurisés, tout en ayant une interface graphique simple et élégante. L’application inclut une fonction pour changer la langue de l’interface, soit en anglais ou en français, ainsi que l’option d’exporter les mots de passe enregistrés au format JSON comme sauvegarde et reimporter ce même fichier. Le programme permet à l’utilisateur de sauvegarder une étiquette (Ex. : Twitter, Facebook, etc.), un nom d’utilisateur ou courriel, une manière d’identifier rapidement les informations importantes ainsi qu’un mot de passe qui sera chiffré à l’aide d’un algorithme personnalisé. Cette application même a été écrite en partie en JavaScript à l\'aide des framework "React", ainsi qu\'en Rust avec le framework "Tauri".',
+            "Une couche d’authentification modulaire pour les API, indépendante du framework web. La connexion passe par des fournisseurs (des identifiants locaux pour l’instant, OAuth est prévu), et une stratégie décide comment la session est créée, vérifiée et sérialisée, par exemple en JWT dans un cookie sécurisé. CreateAuth retourne un gestionnaire de requêtes standard, monté sur /api/auth au moyen d’un adaptateur (Express, par exemple), et une fonction getSession pour lire la session n’importe où dans l’application. Fournisseurs et stratégies sont des interfaces : on peut écrire les siens. Écrit en TypeScript et publié sur npm sous le nom orange-auth, le projet est encore jeune et expérimental.",
         description_en:
-            "A desktop application that takes care of saving your passwords securely, while having a simple and elegant graphical interface. The application includes a function to change the interface language, either to English or French, as well as the option to export passwords saved in JSON format as a backup and reimport this same file. The program allows the user to save a label (Ex.: Twitter, Facebook, etc.), a username or email, a way to quickly identify important information as well as a password which will be encrypted using a custom algorithm. This very application was written partly in JavaScript using the React framework, as well as in Rust with the Tauri framework.",
-        link_code: "https://github.com/Unimat45/PasswordPatch.git",
-        nbr_images: 2,
-        tags: ["Rust", "TypeScript", "React"],
+            "A modular authentication layer for APIs, independent of the web framework. Logging in goes through providers (local credentials for now, OAuth is planned), and a strategy decides how the session is created, verified and serialized, for example as a JWT in a secure cookie. CreateAuth returns a standard request handler, mounted on /api/auth through an adapter (Express, for example), and a getSession function to read the session anywhere in the app. Providers and strategies are interfaces: you can write your own. Written in TypeScript and published on npm as orange-auth, the project is still young and experimental.",
+        link_code: "https://github.com/Unimat45/OrangeAuth",
+        tags: ["TypeScript"],
+        has_code: true,
+        has_demo: false,
+    },
+    {
+        title: "Crosshair",
+        slug: "crosshair",
+        depth: -5,
+        layer: "system",
+        summary_fr:
+            "Un réticule dessiné au centre de l'écran avec l'API Windows, repositionnable au clavier et configurable par un script Lua.",
+        summary_en:
+            "A crosshair drawn at the centre of the screen through the Windows API, moved with hotkeys and configured by a Lua script.",
+        description_fr:
+            "Pratique pour les jeux de tirs, cette application dessine un petit réticule au centre de votre écran principal dans le but d’aider à la précision de ces jeux. Malgré que cette application soit écrite en C++, elle est offerte seulement sur les machines Windows, vu qu’elle utilise l’API Windows pour créer une fenêtre et dessiner à l’intérieur. Le réticule peut s’adapter aux différents jeux : à l’aide d’une combinaison de touches, il est possible de changer l’endroit du dessin afin d’accommoder tous les jeux. Un fichier de configuration est aussi disponible pour automatiser le placement du réticule au lancement d’une application. Ce fichier de configuration est un script lua.",
+        description_en:
+            "Practical for shooting games, this application draws a small crosshair in the center of your main screen in order to help with the precision of these games. Although this application is written in C++, it is only available on Windows machines, since it uses the Windows API to create a window and draw inside it. The reticle can be adapted to different games: using a key combination, it is possible to change the location of the drawing in order to accommodate all games. A configuration file is also available to automate the placement of the reticle when launching an application. This configuration file is a lua script.",
+        link_code: "https://github.com/Unimat45/Crosshair.git",
+        tags: ["C/C++"],
         has_code: true,
         has_demo: false,
     },
     {
         title: "Pong",
         slug: "pong",
-        depth: -2,
+        depth: 0,
         layer: "wasm",
         summary_fr:
             "Le classique, écrit en C++ avec SDL2, puis compilé en WebAssembly pour se jouer directement dans le navigateur.",
@@ -131,47 +182,8 @@ export const projects: Project[] = [
             "Although the game of “pong” is one of the oldest commercialized video games, its charm and simplicity keep players’ attention. Several people have attempted to rebuild this interactive gaming icon, and many have added a touch of cosmetic customization to make the interface more attractive. This version remains more original to its source, but, on the other hand, offers the possibility of being played in a web browser or natively on a computer. Written in C++ and using the “SDL2” graphics library, you can use a compiler to convert this program into WebAssembly. Of course, you can always compile it in a more traditional way and play it as a desktop application.",
         link_demo: "/pong.html",
         link_code: "https://github.com/unimat45/pong.git",
-        nbr_images: 1,
         tags: ["C/C++", "WebAssembly"],
         has_code: true,
         has_demo: true,
-    },
-    {
-        title: "Crosshair",
-        slug: "crosshair",
-        depth: -3,
-        layer: "system",
-        summary_fr:
-            "Un réticule dessiné au centre de l'écran avec l'API Windows, repositionnable au clavier et configurable par un script Lua.",
-        summary_en:
-            "A crosshair drawn at the centre of the screen through the Windows API, moved with hotkeys and configured by a Lua script.",
-        description_fr:
-            "Pratique pour les jeux de tirs, cette application dessine un petit réticule au centre de votre écran principal dans le but d’aider à la précision de ces jeux. Malgré que cette application soit écrite en C++, elle est offerte seulement sur les machines Windows, vu qu’elle utilise l’API Windows pour créer une fenêtre et dessiner à l’intérieur. Le réticule peut s’adapter aux différents jeux : à l’aide d’une combinaison de touches, il est possible de changer l’endroit du dessin afin d’accommoder tous les jeux. Un fichier de configuration est aussi disponible pour automatiser le placement du réticule au lancement d’une application. Ce fichier de configuration est un script lua.",
-        description_en:
-            "Practical for shooting games, this application draws a small crosshair in the center of your main screen in order to help with the precision of these games. Although this application is written in C++, it is only available on Windows machines, since it uses the Windows API to create a window and draw inside it. The reticle can be adapted to different games: using a key combination, it is possible to change the location of the drawing in order to accommodate all games. A configuration file is also available to automate the placement of the reticle when launching an application. This configuration file is a lua script.",
-        link_code: "https://github.com/Unimat45/Crosshair.git",
-        nbr_images: 3,
-        tags: ["C/C++"],
-        has_code: true,
-        has_demo: false,
-    },
-    {
-        title: "RCON",
-        slug: "rcon",
-        depth: -4,
-        layer: "network",
-        summary_fr:
-            "Un client en ligne de commande qui administre un serveur Minecraft à distance, en parlant le protocole RCON directement sur TCP/IP.",
-        summary_en:
-            "A command-line client that manages a Minecraft server remotely by speaking the RCON protocol straight over TCP/IP.",
-        description_fr:
-            "Cette application a un seul but précis : effectuer la gestion d’un serveur minecraft à distance au travers des commandes déjà intégrées du serveur. Bien que ce programme semble très simpliste, le format utilisé pour transmettre les messages au serveur rend le processus plus compliqué. Ce programme s’occupe de lire la commande entrée par l’utilisateur, de les convertir au bon format et de communiquer avec le serveur au travers d’une connexion TCP/IP. Pareillement, à la réception d’un message du serveur, le programme déchiffre les octets et affiche la chaine de caractères dans la console. Très pratique pour gérer plusieurs serveurs.",
-        description_en:
-            "This application has one specific purpose: to manage a Minecraft server remotely using the server's already integrated commands. Although this program seems very simplistic, the format used to transmit messages to the server makes the process more complicated. This program takes care of reading the command entered by the user, converting them to the correct format and communicating with the server through a TCP/IP connection. Similarly, when receiving a message from the server, the program decrypts the bytes and displays the character string in the console. Very practical for managing multiple servers.",
-        link_code: "https://github.com/Unimat45/Rcon.git",
-        nbr_images: 1,
-        tags: ["C/C++"],
-        has_code: true,
-        has_demo: false,
     },
 ];

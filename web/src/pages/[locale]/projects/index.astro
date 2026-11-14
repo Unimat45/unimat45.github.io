@@ -1,6 +1,10 @@
 ---
 import type { GetStaticPaths } from "astro";
+import { getImage } from "astro:assets";
 
+import { thumbFor } from "../../../assets/media";
+import { projects } from "../../../assets/projects";
+import type { Thumb } from "../../../components/ProjectCard";
 import PageHead from "../../../components/PageHead.astro";
 import { Projects } from "../../../components/Projects";
 import Layout from "../../../layouts/Layout.astro";
@@ -18,6 +22,17 @@ const labels = {
     demo: t(($) => $.global.demo),
     code: t(($) => $.global.code),
 };
+
+/* The cards are a React island: resize their thumbnails here and hand over the ready-made sources. */
+const thumbs: Record<string, Thumb> = Object.fromEntries(
+    await Promise.all(
+        projects.map(async (p) => {
+            const { image, focus } = thumbFor(p.slug);
+            const img = await getImage({ src: image, widths: [400, 720, 1080].filter((w) => w <= image.width) });
+            return [p.slug, { src: img.src, srcset: img.srcSet.attribute, focus }];
+        }),
+    ),
+);
 ---
 
 <Layout page="projects" className="wrap pt-[clamp(2.5rem,6vw,5rem)] pb-(--section)">
@@ -27,5 +42,5 @@ const labels = {
         description={t(($) => $.projects.description)}
     />
 
-    <Projects locale={locale} labels={labels} client:load />
+    <Projects locale={locale} labels={labels} thumbs={thumbs} client:load />
 </Layout>

@@ -28,3 +28,6 @@ pnpm-debug.log*
 
 # Sitemap (auto generated)
 public/sitemap.xml
+
+# Raw screenshot captures for the project pages (the site uses the processed copies in web/src/assets/projects)
+design/

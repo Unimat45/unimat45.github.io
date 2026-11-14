@@ -3,17 +3,21 @@ import type React from "react";
 
 import { layers, type Project } from "../assets/projects";
 
+/** A thumbnail already resized at build time (see pages/[locale]/projects/index.astro). */
+export type Thumb = { src: string; srcset: string; focus: string };
+
 interface Props {
     index: number;
     locale: "fr" | "en";
     project: Project;
+    thumb?: Thumb;
     labels: { demo: string; code: string };
 }
 
 const linkClass =
     "inline-flex items-center gap-1 py-1 font-mono text-[0.8rem] font-medium underline decoration-line decoration-[1.5px] underline-offset-[0.3em] transition-colors hover:text-accent hover:decoration-accent-strong";
 
-export const ProjectCard: React.FC<Props> = ({ index, locale, project, labels }) => {
+export const ProjectCard: React.FC<Props> = ({ index, locale, project, thumb, labels }) => {
     const depth = project.depth === 0 ? "0" : `−${Math.abs(project.depth)}`;
 
     return (
@@ -23,16 +27,21 @@ export const ProjectCard: React.FC<Props> = ({ index, locale, project, labels })
                 animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`,
             }}
         >
-            <div className="aspect-[1024/450] overflow-hidden border-b border-line">
-                <img
-                    src={`/images/projets/${project.slug}/thumb.webp`}
-                    width={720}
-                    height={316}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                />
+            <div className="aspect-[16/10] overflow-hidden border-b border-line">
+                {thumb && (
+                    <img
+                        src={thumb.src}
+                        srcSet={thumb.srcset}
+                        sizes="(min-width: 64rem) 24rem, (min-width: 48rem) 50vw, 100vw"
+                        width={720}
+                        height={450}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        style={{ objectPosition: thumb.focus }}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                )}
             </div>
 
             <div className="flex flex-1 flex-col p-6">

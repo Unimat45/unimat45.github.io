@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createTRPCClient, httpBatchStreamLink, loggerLink } from "@trpc/client";
 import { createTRPCContext } from "@trpc/tanstack-react-query";
+import { PUBLIC_API_URL } from "astro:env/client";
 import { useState } from "react";
 import SuperJSON from "superjson";
 
@@ -47,9 +48,7 @@ export const TRPCProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
                 }),
                 httpBatchStreamLink({
                     transformer: SuperJSON,
-                    url: import.meta.env.PROD
-                        ? "https://dev.bananastreaming.ca/api/portfolio"
-                        : "http://localhost:3000",
+                    url: PUBLIC_API_URL,
                     headers: () => {
                         const headers = new Headers();
                         headers.set("x-trpc-source", "portfolio");
